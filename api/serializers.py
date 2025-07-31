@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from users.models import CustomUser
+from movies.models import PlayList
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -51,4 +52,16 @@ class ListCustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'is_staff',)
+
+
+class PlayListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayList
+        fields = ('id', 'name', 'created_by', 'movies', 'created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at')
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        playlist = PlayList.objects.create(created_by=user, **validated_data)
+        return playlist
 

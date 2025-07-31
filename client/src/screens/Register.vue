@@ -184,17 +184,28 @@
 <script setup>
 import { ref } from "vue";
 import Loader from "../components/Loader.vue";
+import { useAuth } from "../stores/auth.js";
 
-const fullName = ref("");
+const firstName = ref("");
+const lastName = ref("");
+const username = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const agreeTerms = ref(false);
 const loading = ref(false);
+const errors = ref({});
+const auth = useAuth();
 
 const handleRegister = async () => {
+  // Reset errors
+  errors.value = {};
+  if (!email.value || !password.value || !confirmPassword.value) {
+    errors.value.general = "All fields are required.";
+    return;
+  }
   if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match!");
+    errors.value.password = "Passwords do not match.";
     return;
   }
 
@@ -203,17 +214,21 @@ const handleRegister = async () => {
   try {
     // Add your registration logic here
     console.log("Registration attempt:", {
-      fullName: fullName.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      username: username.value,
       email: email.value,
       password: password.value,
       agreeTerms: agreeTerms.value,
     });
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Handle successful registration
-    alert("Registration successful!");
+    await auth.registerAction({
+      first_name: firstName.value,
+      last_name: lastName.value,
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    });
   } catch (error) {
     console.error("Registration error:", error);
     alert("Registration failed. Please try again.");

@@ -1,12 +1,10 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, ListCreateAPIView, UpdateAPIView
-from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, CreateAPIView, ListCreateAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status
-from . serializers import CustomUserSerializer, ListCustomUserSerializer, CustomTokenObtainPairSerializer
+from . serializers import CustomUserSerializer, ListCustomUserSerializer, CustomTokenObtainPairSerializer, PlayListSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
+from movies.models import PlayList
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -34,3 +32,25 @@ class ListCustomUsersApiView(ListAPIView):
     serializer_class = ListCustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
+
+
+class ListCreatePlayListApiView(ListCreateAPIView):
+    serializer_class = PlayListSerializer
+    queryset = PlayList.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class RetrieveUpdateDestroyPlayListApiView(RetrieveUpdateDestroyAPIView):
+    serializer_class = PlayListSerializer
+    queryset = PlayList.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, id=self.kwargs['pk'], created_by=self.request.user)
+        return obj
+
+

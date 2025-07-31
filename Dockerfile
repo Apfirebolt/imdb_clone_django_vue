@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Use a specific Python base image for stability and smaller size
-FROM python:3.11-slim-buster
+FROM python:3.11-slim-bookworm
 
 # Set environment variables for non-interactive commands
 ENV PYTHONDONTWRITEBYTECODE 1

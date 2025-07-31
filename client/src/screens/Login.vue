@@ -102,11 +102,13 @@
 <script setup>
 import { ref } from "vue";
 import Loader from "../components/Loader.vue";
+import { useAuth } from "../stores/auth.js";
 
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const loading = ref(false);
+const userStore = useAuth();
 
 const handleLogin = async () => {
   loading.value = true;
@@ -119,11 +121,10 @@ const handleLogin = async () => {
       rememberMe: rememberMe.value,
     });
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Handle successful login
-    alert("Login successful!");
+    await userStore.loginAction({
+      email: email.value,
+      password: password.value,
+    });
   } catch (error) {
     console.error("Login error:", error);
     alert("Login failed. Please try again.");

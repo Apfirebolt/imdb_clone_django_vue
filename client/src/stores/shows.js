@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import httpClient from "../plugins/interceptor";
+import { httpClient } from "../plugins/interceptor";
 
 export const useShowStore = defineStore("show", {
   state: () => ({
