@@ -4,7 +4,7 @@
       <div class="flex items-center h-16">
         <div class="flex items-center w-full justify-between">
           <div class="justify-between flex items-center">
-            <h2 class="text-2xl text-white font-bold">QS University Ranking</h2>
+            <h2 class="text-2xl text-white font-bold">IMDB Movies</h2>
           </div>
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
@@ -51,15 +51,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { MenuIcon, XIcon } from "@heroicons/vue/outline";
 
 const isScrolledDown = ref(false);
 const links = [
   { name: 'Home', href: '/' },
+  { name: 'Login', href: '/login' },
+  { name: 'Register', href: '/register' },
   { name: 'About', href: '/about' },
-  { name: 'University', href: '/university' },
+  { name: 'Movies', href: '/movies' },
+  { name: 'Shows', href: '/shows' },
+  { name: 'Indian Movies', href: '/indian-movies' },
 ];
 
 const checkScroll = () => {

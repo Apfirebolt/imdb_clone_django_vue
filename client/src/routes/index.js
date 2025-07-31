@@ -9,14 +9,34 @@ const routes = [
         component: Home
     },
     {
+        path: '/login',
+        name: 'Login',
+        component: () => import('../screens/Login.vue')
+    },
+    {
+        path: '/register',
+        name: 'Register',
+        component: () => import('../screens/Register.vue')
+    },
+    {
         path: '/about',
         name: 'About',
         component: () => import('../screens/About.vue')
     },
     {
-        path: '/university',
-        name: 'University',
-        component: () => import('../screens/University.vue')
+        path: '/movies',
+        name: 'Movies',
+        component: () => import('../screens/Movies.vue')
+    },
+    {
+        path: '/shows',
+        name: 'Shows',
+        component: () => import('../screens/Shows.vue')
+    },
+    {
+        path: '/indian-movies',
+        name: 'IndianMovies',
+        component: () => import('../screens/IndianMovies.vue')
     },
     {
         path: '/:catchAll(.*)',
