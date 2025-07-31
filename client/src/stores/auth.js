@@ -61,9 +61,12 @@ export const useAuth = defineStore("auth", {
         if (response.data && response.status === 201) {
           this.authData = response.data;
           // Show success toast
-          toast.success("Registration successful!", toastOptions);
+          toast.success("Registration successful! Please login to continue", toastOptions);
           Cookie.set("user", JSON.stringify(response.data), { expires: 30 });
-          router.push("/dashboard");
+          // wait for 2 second before redirecting
+          setTimeout(() => {
+            router.push("/login");
+          }, 2000);
         }
       } catch (error) {
         let message = "An error occurred!";

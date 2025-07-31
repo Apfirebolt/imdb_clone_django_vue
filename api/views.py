@@ -42,6 +42,9 @@ class ListCreatePlayListApiView(ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
+    def get_queryset(self):
+        return PlayList.objects.filter(created_by=self.request.user)
+
 
 class RetrieveUpdateDestroyPlayListApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = PlayListSerializer

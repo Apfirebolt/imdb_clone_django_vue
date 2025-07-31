@@ -37,17 +37,27 @@
 <script setup>
 import { reactive } from "vue";
 
+// emits ['create']
+const emit = defineEmits(["create"]);
+
 const form = reactive({
   name: "",
   description: "",
 });
 
 function submitForm() {
-  // Replace with your API call or emit event
-  alert(
-    `Playlist Created:\nName: ${form.name}\nDescription: ${form.description}`
-  );
-  form.name = "";
-  form.description = "";
+  if (form.name && form.description) {
+    // Emit the create event with the form data
+    emit("create", {
+      name: form.name,
+      description: form.description,
+    });
+    // Reset the form
+    form.name = "";
+    form.description = "";
+  } else {
+    // Handle validation error
+    console.error("Form is incomplete");
+  }
 }
 </script>

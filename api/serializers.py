@@ -57,11 +57,16 @@ class ListCustomUserSerializer(serializers.ModelSerializer):
 class PlayListSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlayList
-        fields = ('id', 'name', 'created_by', 'movies', 'created_at', 'updated_at')
-        read_only_fields = ('created_at', 'updated_at')
+        fields = ('id', 'name', 'created_by', 'created_at', 'description')
+        read_only_fields = ('created_at', 'created_by')
 
-    def create(self, validated_data):
-        user = self.context['request'].user
-        playlist = PlayList.objects.create(created_by=user, **validated_data)
-        return playlist
+    def validate_name(self, value):
+        # Access the request user from the context
+        request_user = self.context.get('request').user
+        if not request_user.is_authenticated:
+            raise serializers.ValidationError("Authentication required to create a playlist.")
+
+        if PlayList.objects.filter(name=value, created_by=request_user).exists():
+            raise serializers.ValidationError("You already have a playlist with this name.")
+        return value
 

@@ -30,7 +30,7 @@ export const usePlaylistStore = defineStore("playlist", {
       try {
         const authData = Cookie.get("user");
         const headers = {
-          Authorization: `Bearer ${JSON.parse(authData).token}`,
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
         };
         const response = await backendClient.get("playlists", { headers });
         this.playlists = response.data;
@@ -47,7 +47,7 @@ export const usePlaylistStore = defineStore("playlist", {
       try {
         const authData = Cookie.get("user");
         const headers = {
-          Authorization: `Bearer ${JSON.parse(authData).token}`,
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
         };
         const response = await backendClient.post("playlists", playlistData, {
           headers,
@@ -94,7 +94,7 @@ export const usePlaylistStore = defineStore("playlist", {
       try {
         const authData = Cookie.get("user");
         const headers = {
-          Authorization: `Bearer ${JSON.parse(authData).token}`,
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
         };
         await backendClient.delete(`playlists/${id}`, { headers });
         this.playlists = this.playlists.filter((p) => p.id !== id);
