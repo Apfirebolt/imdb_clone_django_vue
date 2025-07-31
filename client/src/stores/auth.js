@@ -2,8 +2,18 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import Cookie from "js-cookie";
 import router from "../routes";
+import { toast } from 'vue3-toastify';
 import { backendClient } from "../plugins/interceptor";
 
+const toastOptions = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+};
 
 export const useAuth = defineStore("auth", {
   state: () => ({
@@ -26,9 +36,14 @@ export const useAuth = defineStore("auth", {
         const response = await backendClient.post("login", loginData);
         if (response.data) {
           this.authData = response.data;
+          // Show success toast
+          toast.success("Login successful!", toastOptions);
           // set the data in cookie
           Cookie.set("user", JSON.stringify(response.data), { expires: 30 });
-          router.push("/dashboard");
+          // wait for 2 second before redirecting
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 2000);
         }
       } catch (error) {
         let message = "An error occurred!";
@@ -45,6 +60,8 @@ export const useAuth = defineStore("auth", {
         const response = await backendClient.post("register", registerData);
         if (response.data && response.status === 201) {
           this.authData = response.data;
+          // Show success toast
+          toast.success("Registration successful!", toastOptions);
           Cookie.set("user", JSON.stringify(response.data), { expires: 30 });
           router.push("/dashboard");
         }

@@ -6,6 +6,7 @@ import App from './App.vue'
 
 // AOS imports
 import 'aos/dist/aos.css'
+import 'vue3-toastify/dist/index.css';
 
 const app = createApp(App)
 app.use(router)

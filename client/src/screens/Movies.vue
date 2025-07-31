@@ -512,8 +512,6 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useMovieStore } from "../stores/movies";
-import httpClient from "../plugins/interceptor";
-import axios from "axios";
 import Loader from "../components/Loader.vue";
 
 const movieStore = useMovieStore();

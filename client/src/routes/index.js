@@ -24,6 +24,11 @@ const routes = [
         component: () => import('../screens/About.vue')
     },
     {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: () => import('../screens/Dashboard.vue')
+    },
+    {
         path: '/movies',
         name: 'Movies',
         component: () => import('../screens/Movies.vue')

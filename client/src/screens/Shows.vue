@@ -135,8 +135,6 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useShowStore } from "../stores/shows";
-import httpClient from "../plugins/interceptor";
-import axios from "axios";
 import Loader from "../components/Loader.vue";
 
 const showStore = useShowStore();
