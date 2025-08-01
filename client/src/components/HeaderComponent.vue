@@ -27,7 +27,7 @@
 
               <button
                 v-if="authStore.getAuthData"
-                @click="authStore.logout"
+                @click="logoutUtil()"
                 class="text-white bg-red-600 hover:bg-red-700 transition-all duration-200 px-3 py-2 rounded-md font-medium ml-2"
               >
                 Logout
@@ -84,7 +84,6 @@ const links = [
   { name: "Home", href: "/" },
   { name: "Login", href: "/login" },
   { name: "Register", href: "/register" },
-  { name: "About", href: "/about" },
   { name: "Movies", href: "/movies" },
   { name: "Shows", href: "/shows" },
   { name: "Indian Movies", href: "/indian-movies" },
@@ -93,7 +92,6 @@ const links = [
 const authLinks = [
   { name: "Profile", href: "/profile" },
   { name: "Dashboard", href: "/dashboard" },
-  { name: "About", href: "/about" },
   { name: "Movies", href: "/movies" },
   { name: "Shows", href: "/shows" },
   { name: "Indian Movies", href: "/indian-movies" },
@@ -109,6 +107,11 @@ const checkScroll = () => {
   } else {
     isScrolledDown.value = false;
   }
+};
+
+const logoutUtil = () => {
+  authStore.logout();
+  window.location.href = "/";
 };
 
 window.addEventListener("scroll", checkScroll);

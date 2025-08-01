@@ -100,15 +100,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import Loader from "../components/Loader.vue";
+import { useRouter } from "vue-router";
 import { useAuth } from "../stores/auth.js";
 
 const email = ref("");
 const password = ref("");
 const rememberMe = ref(false);
 const loading = ref(false);
+const router = useRouter();
 const userStore = useAuth();
+const isSuccess = computed(() => userStore.isSuccess);
+
+// isSuccess watcher to reset success state after login
+watch(isSuccess, (newValue) => {
+  if (newValue) {
+    router.push("/dashboard");
+    setTimeout(() => {
+      userStore.resetSuccess();
+    }, 3000); // Reset after 3 seconds
+  }
+});
 
 const handleLogin = async () => {
   loading.value = true;

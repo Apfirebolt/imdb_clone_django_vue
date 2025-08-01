@@ -4,7 +4,7 @@ from imdb_clone.settings import AUTH_USER_MODEL
 
 class Movie(models.Model):
     created_by = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='movies_created')
-    imdb_id = models.CharField(max_length=20, unique=True)
+    imdb_id = models.CharField(max_length=20)
     title = models.CharField(max_length=255)
     description = models.TextField()
     primary_image = models.URLField(blank=True, null=True)

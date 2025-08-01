@@ -20,11 +20,6 @@ const routes = [
         component: () => import('../screens/Register.vue')
     },
     {
-        path: '/about',
-        name: 'About',
-        component: () => import('../screens/About.vue')
-    },
-    {
         path: '/dashboard',
         name: 'Dashboard',
         component: () => import('../screens/Dashboard.vue'),

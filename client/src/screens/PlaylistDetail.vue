@@ -21,13 +21,13 @@
             class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition w-full md:w-auto"
             @click="openEditPlaylistForm"
           >
-            Edit
+            Edit <font-awesome-icon icon="edit" class="text-white" />
           </button>
           <button
             class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition w-full md:w-auto"
             @click="deletePlaylist"
           >
-            Delete
+            Delete <font-awesome-icon icon="trash" class="text-white" />
           </button>
         </div>
       </div>
@@ -66,7 +66,7 @@
                   class="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                   @click="removeMovie(movie.id)"
                 >
-                  Remove Movie
+                  Remove Movie <font-awesome-icon icon="trash" class="text-white" />
                 </button>
               </div>
             </div>

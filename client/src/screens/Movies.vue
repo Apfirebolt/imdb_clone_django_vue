@@ -445,6 +445,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm"
@@ -578,12 +582,12 @@
               <DialogPanel
                 class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
-                <Dialog.Title
+                <DialogTitle
                   as="h3"
                   class="text-lg font-medium leading-6 text-gray-900"
                 >
                   Your Playlists
-                </Dialog.Title>
+                </DialogTitle>
                 <div class="mt-4">
                   <Playlist
                     :playlists="playlists"
@@ -621,6 +625,7 @@ import {
   TransitionRoot,
   TransitionChild,
   DialogPanel,
+  DialogTitle,
 } from "@headlessui/vue";
 import Loader from "../components/Loader.vue";
 

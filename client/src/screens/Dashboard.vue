@@ -7,6 +7,7 @@
         <!-- Title & Description Box -->
         <div class="bg-gray-100 rounded-lg p-4 flex-1">
           <h1 class="text-4xl font-bold text-primary mb-2">Dashboard</h1>
+          
           <p class="text-dark leading-relaxed mb-4">
             Welcome to the Dashboard! Here, you can create playlists and manage
             your movie collection.
@@ -41,19 +42,19 @@
                 @click="goToDetail(playlist.id)"
                 class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
               >
-                View Details
+                View Details <font-awesome-icon icon="eye" class="text-white" />
               </button>
               <button
                 class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
                 @click="openEditPlaylistForm(playlist)"
               >
-                Edit
+                Edit <font-awesome-icon icon="edit" class="text-white" />
               </button>
               <button
                 class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                 @click="deletePlaylist(playlist)"
               >
-                Delete
+                Delete <font-awesome-icon icon="trash" class="text-white" />
               </button>
             </div>
           </div>
