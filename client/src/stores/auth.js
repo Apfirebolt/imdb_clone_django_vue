@@ -1,19 +1,11 @@
+// stores/auth.js
+
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import Cookie from "js-cookie";
-import router from "../routes";
-import { toast } from 'vue3-toastify';
 import { backendClient } from "../plugins/interceptor";
-
-const toastOptions = {
-  position: "top-right",
-  autoClose: 5000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-};
+import { toast } from 'vue3-toastify';
+import { toastOptions } from "../utils";
 
 export const useAuth = defineStore("auth", {
   state: () => ({
@@ -22,12 +14,9 @@ export const useAuth = defineStore("auth", {
   }),
 
   getters: {
-    getAuthData() {
-      return this.authData;
-    },
-    isLoading() {
-      return this.loading;
-    },
+    getAuthData: (state) => state.authData,
+    isLoading: (state) => state.loading,
+    isLoggedIn: (state) => !!state.authData,
   },
 
   actions: {
@@ -40,10 +29,7 @@ export const useAuth = defineStore("auth", {
           toast.success("Login successful!", toastOptions);
           // set the data in cookie
           Cookie.set("user", JSON.stringify(response.data), { expires: 30 });
-          // wait for 2 second before redirecting
-          setTimeout(() => {
-            router.push("/dashboard");
-          }, 2000);
+          return response.data; // Return the auth data
         }
       } catch (error) {
         let message = "An error occurred!";
@@ -51,7 +37,8 @@ export const useAuth = defineStore("auth", {
           message = error.response.data.message;
         }
         console.log('Some error', error);
-        return error;
+        toast.error(message, toastOptions);
+        throw error; // Re-throw the error so it can be handled by the caller
       }
     },
 
@@ -60,13 +47,9 @@ export const useAuth = defineStore("auth", {
         const response = await backendClient.post("register", registerData);
         if (response.data && response.status === 201) {
           this.authData = response.data;
-          // Show success toast
           toast.success("Registration successful! Please login to continue", toastOptions);
           Cookie.set("user", JSON.stringify(response.data), { expires: 30 });
-          // wait for 2 second before redirecting
-          setTimeout(() => {
-            router.push("/login");
-          }, 2000);
+          return response.data;
         }
       } catch (error) {
         let message = "An error occurred!";
@@ -74,29 +57,15 @@ export const useAuth = defineStore("auth", {
           message = error.response.data.message;
         }
         console.log(error);
-        return error;
-      }
-    },
-
-    async getProfileData() {
-      try {
-        // get the token from the cookie
-        const authData = Cookie.get("user");
-        const headers = {
-          Authorization: `Bearer ${JSON.parse(authData).token}`,
-        };
-        const response = await backendClient.get("users/profile", { headers });
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-        return error;
+        toast.error(message, toastOptions);
+        throw error;
       }
     },
 
     logout() {
       this.authData = null;
+      toast.success("Logged out successfully!", toastOptions);
       Cookie.remove("user");
-      router.push("/login");
     },
 
     resetAuth() {

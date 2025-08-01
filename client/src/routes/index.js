@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../screens/Home.vue'
 import NotFound from '../screens/404.vue'
+import { useAuth } from '../stores/auth'; // Import the store
 
 const routes = [
     {
@@ -26,7 +27,8 @@ const routes = [
     {
         path: '/dashboard',
         name: 'Dashboard',
-        component: () => import('../screens/Dashboard.vue')
+        component: () => import('../screens/Dashboard.vue'),
+        meta: { requiresAuth: true } // <--- Add this meta field
     },
     {
         path: '/movies',
@@ -48,11 +50,23 @@ const routes = [
         name: 'NotFound',
         component: NotFound
     }
-]
+];
 
 const router = createRouter({
     history: createWebHistory(),
     routes
-})
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+    // IMPORTANT: Get the store instance inside the guard
+    const authStore = useAuth();
+
+    if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+        next({ name: 'Login', query: { redirect: to.fullPath } });
+    } else {
+        // All good, let the user proceed
+        next();
+    }
+});
+
+export default router;

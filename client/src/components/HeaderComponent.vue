@@ -1,5 +1,14 @@
 <template>
-  <Disclosure :class="['border-b-4 lg:py-2 fixed top-0 z-20 w-full transition-all duration-300', isScrolledDown ? 'bg-dark dark:bg-slate-800' : 'bg-secondary dark:bg-slate-700 dark:text-white']" as="nav" v-slot="{ open }">
+  <Disclosure
+    :class="[
+      'border-b-4 lg:py-2 fixed top-0 z-20 w-full transition-all duration-300',
+      isScrolledDown
+        ? 'bg-dark dark:bg-slate-800'
+        : 'bg-secondary dark:bg-slate-700 dark:text-white',
+    ]"
+    as="nav"
+    v-slot="{ open }"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center h-16">
         <div class="flex items-center w-full justify-between">
@@ -9,9 +18,22 @@
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
               <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+              <span
+                v-if="authStore.getAuthData"
+                class="text-white px-3 py-2 rounded-md font-medium"
+              >
+                Welcome, {{ authStore.getAuthData.userData.email }}!
+              </span>
 
+              <button
+                v-if="authStore.getAuthData"
+                @click="authStore.logout"
+                class="text-white bg-red-600 hover:bg-red-700 transition-all duration-200 px-3 py-2 rounded-md font-medium ml-2"
+              >
+                Logout
+              </button>
               <router-link
-                v-for="link in links"
+                v-for="link in userLinks"
                 :key="link.name"
                 :to="link.href"
                 class="text-white hover:bg-primary transition-all duration-200 hover:text-white px-3 py-2 rounded-md font-medium"
@@ -38,7 +60,7 @@
     <DisclosurePanel class="sm:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1">
         <router-link
-          v-for="link in links"
+          v-for="link in userLinks"
           :key="link.name"
           :to="link.href"
           class="text-gray-300 hover:bg-primary transition-all duration-200 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
@@ -51,20 +73,35 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { MenuIcon, XIcon } from "@heroicons/vue/outline";
+import { useAuth } from "../stores/auth";
 
 const isScrolledDown = ref(false);
+const authStore = useAuth();
 const links = [
-  { name: 'Home', href: '/' },
-  { name: 'Login', href: '/login' },
-  { name: 'Register', href: '/register' },
-  { name: 'About', href: '/about' },
-  { name: 'Movies', href: '/movies' },
-  { name: 'Shows', href: '/shows' },
-  { name: 'Indian Movies', href: '/indian-movies' },
+  { name: "Home", href: "/" },
+  { name: "Login", href: "/login" },
+  { name: "Register", href: "/register" },
+  { name: "About", href: "/about" },
+  { name: "Movies", href: "/movies" },
+  { name: "Shows", href: "/shows" },
+  { name: "Indian Movies", href: "/indian-movies" },
 ];
+
+const authLinks = [
+  { name: "Profile", href: "/profile" },
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "About", href: "/about" },
+  { name: "Movies", href: "/movies" },
+  { name: "Shows", href: "/shows" },
+  { name: "Indian Movies", href: "/indian-movies" },
+];
+
+const userLinks = computed(() => {
+  return authStore.getAuthData ? authLinks : links;
+});
 
 const checkScroll = () => {
   if (window.scrollY > 100) {
@@ -74,11 +111,7 @@ const checkScroll = () => {
   }
 };
 
-window.addEventListener('scroll', checkScroll);
-
-onMounted(() => {
-  checkScroll();
-});
+window.addEventListener("scroll", checkScroll);
 
 onMounted(() => {
   checkScroll();
