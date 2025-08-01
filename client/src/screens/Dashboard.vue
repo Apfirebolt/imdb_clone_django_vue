@@ -29,6 +29,12 @@
 
             <div class="mt-auto flex justify-end space-x-2">
               <button
+                @click="goToDetail(playlist.id)"
+                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
+              >
+                View Details
+              </button>
+              <button
                 class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
                 @click="openEditPlaylistForm(playlist)"
               >
@@ -101,12 +107,14 @@ import {
 } from "@headlessui/vue";
 import { onMounted, ref, computed } from "vue";
 import { useMovieStore } from "../stores/movies";
+import { useRoute, useRouter } from "vue-router";
 import { usePlaylistStore } from "../stores/playlist";
 import PlaylistForm from "../components/PlaylistForm.vue";
 import Loader from "../components/Loader.vue";
 
 const movieStore = useMovieStore();
 const playlistStore = usePlaylistStore();
+const router = useRouter();
 const isPlaylistFormVisible = ref(false);
 const loading = computed(() => movieStore.isLoading);
 const selectedTab = ref("topRated");
@@ -124,6 +132,10 @@ const hidePlaylistForm = () => {
 const showPlaylistForm = () => {
   selectedPlaylist.value = null; // Reset selected playlist
   isPlaylistFormVisible.value = true;
+};
+
+const goToDetail = (playlistId) => {
+  router.push({ name: "PlaylistDetail", params: { id: playlistId } });
 };
 
 const createPlaylistUtil = async (playlistData) => {
