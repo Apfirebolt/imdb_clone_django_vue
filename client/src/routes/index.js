@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../screens/Home.vue'
 import NotFound from '../screens/404.vue'
-import { useAuth } from '../stores/auth'; // Import the store
+import { useAuth } from '../stores/auth';
 
 const routes = [
     {

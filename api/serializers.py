@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import CustomUser
-from movies.models import PlayList
+from movies.models import PlayList, Movie
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -69,4 +69,11 @@ class PlayListSerializer(serializers.ModelSerializer):
         if PlayList.objects.filter(name=value, created_by=request_user).exists():
             raise serializers.ValidationError("You already have a playlist with this name.")
         return value
+    
+
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = '__all__'
+        read_only_fields = ('created_by', 'created_at')
 

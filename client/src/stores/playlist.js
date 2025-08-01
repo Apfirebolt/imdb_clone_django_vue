@@ -116,9 +116,38 @@ export const usePlaylistStore = defineStore("playlist", {
       }
     },
 
-    resetPlaylists() {
-      this.playlists = [];
+    async addMovieToPlaylist(playlistId, movieData) {
+      this.loading = true;
       this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.post(
+          `playlists/${playlistId}/add-movie`,
+          movieData,
+          { headers }
+        );
+        if (response.status === 200) {
+          const index = this.playlists.findIndex((p) => p.id === playlistId);
+          if (index !== -1) {
+            this.playlists[index] = response.data;
+          }
+          toast.success("Movie added to playlist successfully!", toastOptions);
+          return response.data;
+        }
+      } catch (error) {
+        this.error = error;
+        return null;
+      } finally {
+        this.loading = false;
+      }
     },
+  },
+
+  resetPlaylists() {
+    this.playlists = [];
+    this.error = null;
   },
 });
