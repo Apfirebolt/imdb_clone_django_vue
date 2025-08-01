@@ -179,6 +179,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm"
@@ -223,6 +227,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm"
@@ -267,6 +275,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm"
@@ -311,6 +323,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm"
@@ -356,6 +372,10 @@
               {{ movie.description }}
             </p>
             <div class="flex justify-between items-center">
+              <SaveMovie
+                v-if="isAuthenticated"
+                @saveMovie="addMovieToPlaylist(movie)"
+              />
               <span
                 v-if="movie.averageRating"
                 class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm"
@@ -445,82 +465,86 @@
         </div>
 
         <div v-if="selectedTab === 'upcomingMovies'" class="space-y-4">
-            <div class="mb-6">
-                <div class="flex gap-2">
-                    <input
-                        v-model="countryCode"
-                        @keyup.enter="getUpcomingMovies"
-                        type="text"
-                        placeholder="Enter country code (e.g., US, UK, IN)..."
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                    <button
-                        @click="getUpcomingMovies"
-                        :disabled="!countryCode.trim() || loading"
-                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        Get Movies
-                    </button>
-                </div>
+          <div class="mb-6">
+            <div class="flex gap-2">
+              <input
+                v-model="countryCode"
+                @keyup.enter="getUpcomingMovies"
+                type="text"
+                placeholder="Enter country code (e.g., US, UK, IN)..."
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+              <button
+                @click="getUpcomingMovies"
+                :disabled="!countryCode.trim() || loading"
+                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Get Movies
+              </button>
             </div>
+          </div>
 
+          <div
+            v-if="upComingMovies && upComingMovies.length > 0"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
             <div
-                v-if="upComingMovies && upComingMovies.length > 0"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              v-for="movie in upComingMovies"
+              :key="movie.id"
+              class="bg-gray-50 p-4 rounded-lg shadow-md"
             >
-                <div
-                    v-for="movie in upComingMovies"
-                    :key="movie.id"
-                    class="bg-gray-50 p-4 rounded-lg shadow-md"
+              <img
+                v-if="movie.primaryImage"
+                :src="movie.primaryImage"
+                :alt="movie.primaryTitle"
+                class="w-full h-48 object-cover rounded-lg mb-3"
+              />
+              <h3 class="font-semibold text-lg mb-2">
+                {{ movie.primaryTitle || movie.title }}
+              </h3>
+              <p class="text-sm text-gray-600 mb-2">
+                {{ movie.releaseDate || movie.release_date }}
+              </p>
+              <p
+                v-if="movie.description"
+                class="text-sm text-gray-700 mb-2 line-clamp-3"
+              >
+                {{ movie.description }}
+              </p>
+              <div class="flex justify-between items-center">
+                <span
+                  v-if="movie.averageRating"
+                  class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm"
                 >
-                    <img
-                        v-if="movie.primaryImage"
-                        :src="movie.primaryImage"
-                        :alt="movie.primaryTitle"
-                        class="w-full h-48 object-cover rounded-lg mb-3"
-                    />
-                    <h3 class="font-semibold text-lg mb-2">
-                        {{ movie.primaryTitle || movie.title }}
-                    </h3>
-                    <p class="text-sm text-gray-600 mb-2">
-                        {{ movie.releaseDate || movie.release_date }}
-                    </p>
-                    <p
-                        v-if="movie.description"
-                        class="text-sm text-gray-700 mb-2 line-clamp-3"
-                    >
-                        {{ movie.description }}
-                    </p>
-                    <div class="flex justify-between items-center">
-                        <span
-                            v-if="movie.averageRating"
-                            class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm"
-                        >
-                            ⭐ {{ movie.averageRating }}
-                        </span>
-                        <span
-                            v-if="movie.contentRating"
-                            class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm"
-                        >
-                            {{ movie.contentRating }}
-                        </span>
-                    </div>
-                </div>
+                  ⭐ {{ movie.averageRating }}
+                </span>
+                <span
+                  v-if="movie.contentRating"
+                  class="bg-gray-200 text-gray-800 px-2 py-1 rounded text-sm"
+                >
+                  {{ movie.contentRating }}
+                </span>
+              </div>
             </div>
+          </div>
 
-            <div
-                v-else-if="countryCode && !loading"
-                class="text-center py-8 text-gray-500"
-            >
-                No upcoming movies found for country code "{{ countryCode }}"
-            </div>
+          <div
+            v-else-if="countryCode && !loading"
+            class="text-center py-8 text-gray-500"
+          >
+            No upcoming movies found for country code "{{ countryCode }}"
+          </div>
         </div>
       </div>
     </div>
 
     <Loader v-if="loading" />
     <TransitionRoot appear :show="isPlaylistModalOpened" as="template">
-      <Dialog as="div" class="relative z-50" @close="isPlaylistModalOpened = false">
+      <Dialog
+        as="div"
+        class="relative z-50"
+        @close="isPlaylistModalOpened = false"
+      >
         <TransitionChild
           as="template"
           enter="ease-out duration-300"
@@ -534,7 +558,9 @@
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full items-center justify-center p-4 text-center">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
+          >
             <TransitionChild
               as="template"
               enter="ease-out duration-300"
@@ -544,12 +570,21 @@
               leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95"
             >
-              <DialogPanel class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" class="text-lg font-medium leading-6 text-gray-900">
+              <DialogPanel
+                class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
+                <Dialog.Title
+                  as="h3"
+                  class="text-lg font-medium leading-6 text-gray-900"
+                >
                   Your Playlists
                 </Dialog.Title>
                 <div class="mt-4">
-                  <Playlist :playlists="playlists" :selectedPlaylist="selectedPlaylist" @choosePlaylist="selectPlaylist" />
+                  <Playlist
+                    :playlists="playlists"
+                    :selectedPlaylist="selectedPlaylist"
+                    @choosePlaylist="selectPlaylist"
+                  />
                 </div>
                 <div class="mt-6 flex justify-end">
                   <button
@@ -576,7 +611,12 @@ import { useAuth } from "../stores/auth";
 import { usePlaylistStore } from "../stores/playlist";
 import SaveMovie from "../components/SaveMovie.vue";
 import Playlist from "../components/Playlist.vue";
-import { Dialog, TransitionRoot, TransitionChild, DialogPanel } from "@headlessui/vue";
+import {
+  Dialog,
+  TransitionRoot,
+  TransitionChild,
+  DialogPanel,
+} from "@headlessui/vue";
 import Loader from "../components/Loader.vue";
 
 const movieStore = useMovieStore();
@@ -591,7 +631,7 @@ const topRatedMovies = computed(() => movieStore.getTopRatedMovies);
 const lowestRatedMovies = computed(() => movieStore.getLowestRatedMovies);
 const top250Movies = computed(() => movieStore.getTop250Movies);
 const mostPopularMovies = computed(() => movieStore.getMostPopularMovies);
-const upComingMovies = computed(() => movieStore.getUpcomingMovies);    
+const upComingMovies = computed(() => movieStore.getUpcomingMovies);
 const topRatedEnglishMovies = computed(
   () => movieStore.getTopRatedEnglishMovies
 );
@@ -620,7 +660,6 @@ const selectPlaylist = (playlist) => {
 };
 
 const addMovieToPlaylist = async (movie) => {
-  console.log("Selected Playlist:", movie, selectedPlaylist.value);
   if (!selectedPlaylist.value) {
     alert("Please select a playlist first.");
     return;
@@ -634,7 +673,7 @@ onMounted(() => {
   movieStore.getTop250Action();
   movieStore.getMostPopularAction();
   movieStore.getTopBoxOfficeMoviesAction();
-  movieStore.getUpcomingMoviesByCountryAction('US')
+  movieStore.getUpcomingMoviesByCountryAction("US");
   playlistStore.fetchPlaylists();
 });
 </script>
