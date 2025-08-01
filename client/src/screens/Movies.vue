@@ -131,6 +131,10 @@
                 {{ movie.description }}
               </p>
               <div class="flex justify-between items-center">
+                <SaveMovie
+                  v-if="isAuthenticated"
+                  @saveMovie="addMovieToPlaylist(movie)"
+                />
                 <span
                   v-if="movie.averageRating"
                   class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm"
@@ -545,7 +549,7 @@
                   Your Playlists
                 </Dialog.Title>
                 <div class="mt-4">
-                  <Playlist :playlists="playlists" />
+                  <Playlist :playlists="playlists" :selectedPlaylist="selectedPlaylist" @choosePlaylist="selectPlaylist" />
                 </div>
                 <div class="mt-6 flex justify-end">
                   <button
@@ -581,6 +585,7 @@ const playlistStore = usePlaylistStore();
 const searchQuery = ref("");
 const countryCode = ref("");
 const isPlaylistModalOpened = ref(false);
+const selectedPlaylist = ref(null);
 const movieResults = computed(() => movieStore.getSearchMovies);
 const topRatedMovies = computed(() => movieStore.getTopRatedMovies);
 const lowestRatedMovies = computed(() => movieStore.getLowestRatedMovies);
@@ -610,8 +615,17 @@ const getUpcomingMovies = async () => {
   }
 };
 
+const selectPlaylist = (playlist) => {
+  selectedPlaylist.value = playlist;
+};
+
 const addMovieToPlaylist = async (movie) => {
-  await playlistStore.addMovieToPlaylistAction(movie);
+  console.log("Selected Playlist:", movie, selectedPlaylist.value);
+  if (!selectedPlaylist.value) {
+    alert("Please select a playlist first.");
+    return;
+  }
+  await playlistStore.addMovieToPlaylist(selectedPlaylist.value.id, movie);
 };
 
 onMounted(() => {

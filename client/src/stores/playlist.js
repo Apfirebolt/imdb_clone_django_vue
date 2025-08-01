@@ -3,7 +3,7 @@ import { ref } from "vue";
 import Cookie from "js-cookie";
 import router from "../routes";
 import { backendClient } from "../plugins/interceptor";
-import { toast } from 'vue3-toastify';
+import { toast } from "vue3-toastify";
 import { toastOptions } from "../utils";
 
 export const usePlaylistStore = defineStore("playlist", {
@@ -104,7 +104,9 @@ export const usePlaylistStore = defineStore("playlist", {
         const headers = {
           Authorization: `Bearer ${JSON.parse(authData).access}`,
         };
-        const response = await backendClient.delete(`playlists/${id}`, { headers });
+        const response = await backendClient.delete(`playlists/${id}`, {
+          headers,
+        });
         if (response.status === 204) {
           this.playlists = this.playlists.filter((p) => p.id !== id);
           toast.success("Playlist deleted successfully!", toastOptions);
@@ -124,9 +126,21 @@ export const usePlaylistStore = defineStore("playlist", {
         const headers = {
           Authorization: `Bearer ${JSON.parse(authData).access}`,
         };
-        const response = await backendClient.post(
+        const data = {
+          movie: {
+            imdb_id: movieData.id,
+            title: movieData.originalTitle,
+            description: movieData.description,
+            primary_image: movieData.primaryImage,
+            trailer: movieData.trailer,
+            release_date: movieData.releaseDate,
+            metascore: movieData.metascore,
+            genres: movieData.genres,
+          },
+        };
+        const response = await backendClient.put(
           `playlists/${playlistId}/add-movie`,
-          movieData,
+          data,
           { headers }
         );
         if (response.status === 200) {
@@ -155,20 +169,25 @@ export const usePlaylistStore = defineStore("playlist", {
       const headers = {
         Authorization: `Bearer ${JSON.parse(authData).access}`,
       };
-      const response = await backendClient.delete(`playlists/${playlistId}/remove-movie/${movieId}`, { headers });
+      const response = await backendClient.delete(
+        `playlists/${playlistId}/remove-movie/${movieId}`,
+        { headers }
+      );
       if (response.status === 200) {
         const index = this.playlists.findIndex((p) => p.id === playlistId);
         if (index !== -1) {
           this.playlists[index] = response.data;
         }
-        toast.success("Movie removed from playlist successfully!", toastOptions);
+        toast.success(
+          "Movie removed from playlist successfully!",
+          toastOptions
+        );
         return response.data;
       }
     } catch (error) {
       this.error = error;
       return null;
-    }
-    finally {
+    } finally {
       this.loading = false;
     }
   },

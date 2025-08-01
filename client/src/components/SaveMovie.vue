@@ -11,28 +11,18 @@
 <script setup>
 import { ref } from "vue";
 
-const props = defineProps({
-  movieId: {
-    type: [String, Number],
-    required: true,
-  },
-});
-
-const emit = defineEmits(["saved"]);
+const emit = defineEmits(["saveMovie"]);
 
 const isSaving = ref(false);
 
-async function saveMovie() {
-  isSaving.value = true;
-  try {
-    await fetch(`/api/movies/${props.movieId}/save/`, {
-      method: "POST",
-    });
-    emit("saved");
-  } catch (error) {
-    alert("Failed to save movie.");
-  } finally {
-    isSaving.value = false;
-  }
+async function saveMovie(movie) {
+    isSaving.value = true;
+    try {
+        await emit("saveMovie", movie);
+    } catch (error) {
+        console.error("Error saving movie:", error);
+    } finally {
+        isSaving.value = false;
+    }
 }
 </script>
