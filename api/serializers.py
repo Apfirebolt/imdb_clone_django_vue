@@ -77,3 +77,11 @@ class MovieSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created_by', 'created_at')
 
+
+class PlayListDetailSerializer(serializers.ModelSerializer):
+    movies = MovieSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PlayList
+        fields = ('id', 'name', 'created_by', 'created_at', 'description', 'movies')
+

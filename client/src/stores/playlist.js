@@ -9,6 +9,7 @@ import { toastOptions } from "../utils";
 export const usePlaylistStore = defineStore("playlist", {
   state: () => ({
     playlists: ref([]),
+    playlist: ref(null),
     loading: ref(false),
     error: ref(null),
   }),
@@ -16,6 +17,9 @@ export const usePlaylistStore = defineStore("playlist", {
   getters: {
     getPlaylists(state) {
       return state.playlists;
+    },
+    getPlaylist(state) {
+      return state.playlist;
     },
     isLoading(state) {
       return state.loading;
@@ -118,6 +122,29 @@ export const usePlaylistStore = defineStore("playlist", {
       }
     },
 
+    // get single playlist by id
+    async getPlaylistById(id) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.get(`playlists/${id}`, {
+          headers,
+        });
+        if (response.status === 200) {
+          this.playlist = response.data;
+        }
+      } catch (error) {
+        this.error = error;
+        return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async addMovieToPlaylist(playlistId, movieData) {
       this.loading = true;
       this.error = null;
@@ -158,42 +185,46 @@ export const usePlaylistStore = defineStore("playlist", {
         this.loading = false;
       }
     },
-  },
 
-  // remove movie from a playlist
-  async removeMovieFromPlaylist(playlistId, movieId) {
-    this.loading = true;
-    this.error = null;
-    try {
-      const authData = Cookie.get("user");
-      const headers = {
-        Authorization: `Bearer ${JSON.parse(authData).access}`,
-      };
-      const response = await backendClient.delete(
-        `playlists/${playlistId}/remove-movie/${movieId}`,
-        { headers }
-      );
-      if (response.status === 200) {
-        const index = this.playlists.findIndex((p) => p.id === playlistId);
-        if (index !== -1) {
-          this.playlists[index] = response.data;
-        }
-        toast.success(
-          "Movie removed from playlist successfully!",
-          toastOptions
+    // remove movie from a playlist
+    async removeMovieFromPlaylist(playlistId, movieId) {
+      console.log("Removing movie with ID:", movieId);
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.put(
+          `playlists/${playlistId}/remove-movie`,
+          { movie_id: movieId },
+          { headers }
         );
-        return response.data;
+        if (response.status === 200) {
+          const index = this.playlists.findIndex((p) => p.id === playlistId);
+          if (index !== -1) {
+            this.playlists[index] = response.data;
+          }
+          toast.success(
+            "Movie removed from playlist successfully!",
+            toastOptions
+          );
+          return response.data;
+        }
+      } catch (error) {
+        this.error = error;
+        return null;
+      } finally {
+        this.loading = false;
       }
-    } catch (error) {
-      this.error = error;
-      return null;
-    } finally {
-      this.loading = false;
-    }
+    },
   },
 
   resetPlaylists() {
     this.playlists = [];
+    this.playlist = null;
+    this.loading = false;
     this.error = null;
   },
 });

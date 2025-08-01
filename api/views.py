@@ -1,10 +1,23 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, ListCreateAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    ListCreateAPIView,
+    UpdateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
-from . serializers import CustomUserSerializer, ListCustomUserSerializer, CustomTokenObtainPairSerializer, PlayListSerializer, MovieSerializer
+from .serializers import (
+    CustomUserSerializer,
+    ListCustomUserSerializer,
+    CustomTokenObtainPairSerializer,
+    PlayListSerializer,
+    MovieSerializer,
+    PlayListDetailSerializer,
+)
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
 from movies.models import PlayList, Movie
@@ -56,40 +69,35 @@ class RetrieveUpdateDestroyPlayListApiView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, id=self.kwargs['pk'], created_by=self.request.user)
+        obj = get_object_or_404(
+            queryset, id=self.kwargs["pk"], created_by=self.request.user
+        )
         return obj
-    
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return PlayListDetailSerializer
+        return PlayListSerializer
+
 
 class AddMovieToPlayListApiView(UpdateAPIView):
-    """
-    {
-        "movie": {
-            "imdb_id": "tt1234567",
-            "title": "The New Awesome Movie",
-            "description": "A very descriptive text about the movie.",
-            "primary_image": "https://example.com/image.jpg",
-            "trailer": "https://example.com/trailer.mp4",
-            "release_date": "2024-01-15",
-            "metascore": 85,
-            "genres": ["Action", "Sci-Fi"]
-        }
-    }
-    """
     serializer_class = PlayListSerializer
     queryset = PlayList.objects.all()
     permission_classes = [IsAuthenticated]
 
     # Override the update method directly for custom logic
     def update(self, request, *args, **kwargs):
-        playlist = self.get_object() # Get the specific playlist by pk
+        playlist = self.get_object()  # Get the specific playlist by pk
 
-        movie_data = request.data.get('movie', {}) # Expecting movie details under a 'movie' key
-        imdb_id = movie_data.get('imdb_id')
+        movie_data = request.data.get(
+            "movie", {}
+        )  # Expecting movie details under a 'movie' key
+        imdb_id = movie_data.get("imdb_id")
 
         if not imdb_id:
             return Response(
                 {"detail": "movie_id is required within the 'movie' data."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         with transaction.atomic():
@@ -101,9 +109,11 @@ class AddMovieToPlayListApiView(UpdateAPIView):
                 # Try to get existing movie by imdb_id
                 movie_obj = Movie.objects.get(imdb_id=imdb_id)
                 for attr, value in movie_data.items():
-                    if hasattr(movie_obj, attr) and attr != 'created_by': # Prevent changing creator
+                    if (
+                        hasattr(movie_obj, attr) and attr != "created_by"
+                    ):  # Prevent changing creator
                         setattr(movie_obj, attr, value)
-                movie_obj.save() # Save updates if any
+                movie_obj.save()  # Save updates if any
                 created_new_movie = False
             except Movie.DoesNotExist:
                 # If not found, create a new movie
@@ -119,7 +129,9 @@ class AddMovieToPlayListApiView(UpdateAPIView):
     def get_object(self):
         # Your existing get_object remains the same
         queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, pk=self.kwargs['pk'], created_by=self.request.user)
+        obj = get_object_or_404(
+            queryset, pk=self.kwargs["pk"], created_by=self.request.user
+        )
         return obj
 
     def get_queryset(self):
@@ -128,42 +140,39 @@ class AddMovieToPlayListApiView(UpdateAPIView):
 
 
 class RemoveMovieFromPlayListApiView(UpdateAPIView):
-    """
-    {
-        "movie_id": "tt1234567"
-    }
-    """
+
     serializer_class = PlayListSerializer
     queryset = PlayList.objects.all()
     permission_classes = [IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         playlist = self.get_object()  # Get the specific playlist by pk
-        movie_id = request.data.get('movie_id')
+        movie_id = request.data.get("movie_id")
 
         if not movie_id:
             return Response(
-                {"detail": "movie_id is required."},
-                status=status.HTTP_400_BAD_REQUEST
+                {"detail": "movie_id is required."}, status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
             movie_obj = Movie.objects.get(imdb_id=movie_id)
             playlist.movies.remove(movie_obj)
             playlist.save()
-            return Response({"detail": "Movie removed from playlist."}, status=status.HTTP_200_OK)
+            return Response(
+                {"detail": "Movie removed from playlist."}, status=status.HTTP_200_OK
+            )
         except Movie.DoesNotExist:
             return Response(
                 {"detail": "Movie not found in this playlist."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
     def get_object(self):
         queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, pk=self.kwargs['pk'], created_by=self.request.user)
+        obj = get_object_or_404(
+            queryset, pk=self.kwargs["pk"], created_by=self.request.user
+        )
         return obj
 
     def get_queryset(self):
         return PlayList.objects.filter(created_by=self.request.user)
-
-

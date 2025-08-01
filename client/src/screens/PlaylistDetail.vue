@@ -26,15 +26,42 @@
       <div class="mt-6">
         <h2 class="text-2xl font-bold mb-4">Movies in this Playlist</h2>
         <div v-if="playlist?.movies?.length">
-          <ul>
-            <li
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div
               v-for="movie in playlist.movies"
               :key="movie.id"
-              class="mb-2 p-2 border rounded"
+              class="bg-white rounded shadow p-4 flex flex-col items-center"
             >
-              {{ movie.title }}
-            </li>
-          </ul>
+              <img
+                v-if="movie.primary_image"
+                :src="movie.primary_image"
+                :alt="movie.title"
+                class="w-32 h-48 object-cover rounded mb-3"
+              />
+              <div class="text-center">
+                <h3 class="text-lg font-semibold mb-1">{{ movie.title }}</h3>
+                <p class="text-gray-600 text-sm mb-2 line-clamp-3">
+                  {{ movie.description }}
+                </p>
+                <span
+                  class="inline-block bg-blue-100 text-blue-800 mx-2 text-xs px-2 py-1 rounded mb-1"
+                  v-for="genre in movie.genres"
+                  :key="genre"
+                >
+                  {{ genre }}
+                </span>
+                <div class="text-xs text-gray-500 mt-2">
+                  Released: {{ movie.release_date }}
+                </div>
+                <button
+                    class="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    @click="removeMovie(movie.id)"
+                >
+                    Remove Movie
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <div v-else>
           <p class="text-gray-600">No movies in this playlist.</p>
@@ -100,8 +127,8 @@ const route = useRoute();
 const router = useRouter();
 const playlistStore = usePlaylistStore();
 const isPlaylistFormVisible = ref(false);
+const playlist = computed(() => playlistStore.getPlaylist);
 const loading = computed(() => playlistStore.isLoading);
-const playlist = ref(null);
 
 const fetchPlaylist = async () => {
   try {
@@ -132,6 +159,14 @@ const editPlaylistUtil = async (playlistData) => {
   }
 };
 
+const removeMovie = async (movieId) => {
+  try {
+    await playlistStore.removeMovieFromPlaylist(playlist.value.id, movieId);
+  } catch (error) {
+    console.error("Error removing movie from playlist:", error);
+  }
+};
+
 const deletePlaylist = async () => {
   try {
     await playlistStore.deletePlaylist(playlist.value.id);
@@ -142,6 +177,11 @@ const deletePlaylist = async () => {
 };
 
 onMounted(() => {
-  fetchPlaylist();
+  const playlistId = Number(route.params.id);
+  if (!playlistId) {
+    console.error("Invalid playlist ID");
+    return;
+  }
+  playlistStore.getPlaylistById(playlistId);
 });
 </script>
