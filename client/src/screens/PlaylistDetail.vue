@@ -1,26 +1,35 @@
 <template>
   <div class="bg-info">
     <div class="bg-white shadow-lg rounded-lg p-4">
-      <h1 class="text-4xl font-bold text-primary text-center mb-4 mt-16">
-        {{ playlist?.name || "Playlist Detail" }}
-      </h1>
-      <p class="text-dark leading-relaxed mb-4">
-        {{ playlist?.description }}
-      </p>
-
-      <div class="flex justify-end space-x-2 mb-6">
-        <button
-          class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
-          @click="openEditPlaylistForm"
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-12 gap-4"
+      >
+        <!-- Title & Description Box -->
+        <div class="bg-gray-100 rounded-lg p-4 flex-1">
+          <h1 class="text-4xl font-bold text-primary mb-2">
+            {{ playlist?.name || "Playlist Detail" }}
+          </h1>
+          <p class="text-dark leading-relaxed">
+            {{ playlist?.description }}
+          </p>
+        </div>
+        <!-- Buttons Box -->
+        <div
+          class="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row items-center gap-2 md:ml-4"
         >
-          Edit
-        </button>
-        <button
-          class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-          @click="deletePlaylist"
-        >
-          Delete
-        </button>
+          <button
+            class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition w-full md:w-auto"
+            @click="openEditPlaylistForm"
+          >
+            Edit
+          </button>
+          <button
+            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition w-full md:w-auto"
+            @click="deletePlaylist"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       <div class="mt-6">
@@ -54,10 +63,10 @@
                   Released: {{ movie.release_date }}
                 </div>
                 <button
-                    class="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                    @click="removeMovie(movie.id)"
+                  class="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  @click="removeMovie(movie.id)"
                 >
-                    Remove Movie
+                  Remove Movie
                 </button>
               </div>
             </div>
@@ -162,6 +171,7 @@ const editPlaylistUtil = async (playlistData) => {
 const removeMovie = async (movieId) => {
   try {
     await playlistStore.removeMovieFromPlaylist(playlist.value.id, movieId);
+    await getPlaylistById();
   } catch (error) {
     console.error("Error removing movie from playlist:", error);
   }
@@ -176,12 +186,16 @@ const deletePlaylist = async () => {
   }
 };
 
-onMounted(() => {
-  const playlistId = Number(route.params.id);
-  if (!playlistId) {
-    console.error("Invalid playlist ID");
-    return;
+const getPlaylistById = async () => {
+  try {
+    const id = Number(route.params.id);
+    await playlistStore.getPlaylistById(id);
+  } catch (error) {
+    console.error("Error fetching playlist by ID:", error);
   }
-  playlistStore.getPlaylistById(playlistId);
+};
+
+onMounted(() => {
+  getPlaylistById();
 });
 </script>

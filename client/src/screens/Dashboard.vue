@@ -1,20 +1,29 @@
 <template>
   <div class="bg-info">
     <div class="bg-white shadow-lg rounded-lg p-4">
-      <h1 class="text-4xl font-bold text-primary text-center mb-4 mt-16">
-        Dashboard
-      </h1>
-      <p class="text-dark leading-relaxed mb-4">
-        Welcome to the Dashboard! Here, you can create playlists and manage your
-        movie collection.
-      </p>
-
-      <button
-        @click="showPlaylistForm"
-        class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition mb-6"
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-12 gap-4"
       >
-        Create Playlist
-      </button>
+        <!-- Title & Description Box -->
+        <div class="bg-gray-100 rounded-lg p-4 flex-1">
+          <h1 class="text-4xl font-bold text-primary mb-2">Dashboard</h1>
+          <p class="text-dark leading-relaxed mb-4">
+            Welcome to the Dashboard! Here, you can create playlists and manage
+            your movie collection.
+          </p>
+        </div>
+        <!-- Buttons Box -->
+        <div
+          class="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row items-center gap-2 md:ml-4"
+        >
+          <button
+            @click="showPlaylistForm"
+            class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition mb-6"
+          >
+            Create Playlist
+          </button>
+        </div>
+      </div>
 
       <div class="mt-6">
         <h2 class="text-2xl font-bold mb-4">Your Playlists</h2>

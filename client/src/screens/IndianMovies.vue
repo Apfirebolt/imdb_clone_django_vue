@@ -1,22 +1,28 @@
 <template>
   <div class="min-h-screen bg-info flex items-center justify-center">
     <div class="bg-white shadow-lg rounded-lg p-4">
-      <h1 class="text-4xl font-bold text-primary text-center mb-4 mt-16">
-        Indian Movies
-      </h1>
-      <p class="text-dark leading-relaxed mb-4">
-        Welcome to the Indian Movies section! Here, you can explore a wide variety of
-        films from Tamil and Telugu cinema. Discover trending blockbusters, critically acclaimed films,
-        and the most anticipated upcoming releases.
-      </p>
-
-      <div class="flex justify-end mb-4">
-        <button
-          @click="isPlaylistModalOpened = true"
-          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-        >
-          Open Playlist
-        </button>
+      
+      <div class="flex flex-col md:flex-row items-center justify-between mb-4 mt-16 gap-4">
+        <div class="flex w-full gap-4">
+          <div class="w-3/4 text-center md:text-left">
+            <h1 class="text-4xl font-bold text-primary mb-2">
+              Indian Movies
+            </h1>
+            <p class="text-dark leading-relaxed">
+              Welcome to the Indian Movies section! Here, you can explore a wide variety of
+              films from Tamil and Telugu cinema. Discover trending blockbusters, critically acclaimed films,
+              and the most anticipated upcoming releases.
+            </p>
+          </div>
+          <div class="w-1/4 flex justify-end items-start">
+            <button
+              @click="isPlaylistModalOpened = true"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+            >
+              Open Playlist
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="mb-6">

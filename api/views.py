@@ -155,7 +155,8 @@ class RemoveMovieFromPlayListApiView(UpdateAPIView):
             )
 
         try:
-            movie_obj = Movie.objects.get(imdb_id=movie_id)
+            print('Movie ID:', movie_id)
+            movie_obj = Movie.objects.get(id=movie_id)
             playlist.movies.remove(movie_obj)
             playlist.save()
             return Response(
