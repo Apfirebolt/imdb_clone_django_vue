@@ -10,6 +10,15 @@
         hits, and critically acclaimed cinema.
       </p>
 
+      <div class="flex justify-end mb-4">
+        <button
+          @click="isPlaylistModalOpened = true"
+          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+        >
+          Open Playlist
+        </button>
+      </div>
+
       <div class="mb-6">
         <div class="flex flex-wrap border-b border-gray-200">
           <button
@@ -506,17 +515,72 @@
     </div>
 
     <Loader v-if="loading" />
+    <TransitionRoot appear :show="isPlaylistModalOpened" as="template">
+      <Dialog as="div" class="relative z-50" @close="isPlaylistModalOpened = false">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-30" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild
+              as="template"
+              enter="ease-out duration-300"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                  Your Playlists
+                </Dialog.Title>
+                <div class="mt-4">
+                  <Playlist :playlists="playlists" />
+                </div>
+                <div class="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark focus:outline-none"
+                    @click="isPlaylistModalOpened = false"
+                  >
+                    Close
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useMovieStore } from "../stores/movies";
+import { useAuth } from "../stores/auth";
+import { usePlaylistStore } from "../stores/playlist";
+import SaveMovie from "../components/SaveMovie.vue";
+import Playlist from "../components/Playlist.vue";
+import { Dialog, TransitionRoot, TransitionChild, DialogPanel } from "@headlessui/vue";
 import Loader from "../components/Loader.vue";
 
 const movieStore = useMovieStore();
+const authStore = useAuth();
+const playlistStore = usePlaylistStore();
 const searchQuery = ref("");
 const countryCode = ref("");
+const isPlaylistModalOpened = ref(false);
 const movieResults = computed(() => movieStore.getSearchMovies);
 const topRatedMovies = computed(() => movieStore.getTopRatedMovies);
 const lowestRatedMovies = computed(() => movieStore.getLowestRatedMovies);
@@ -529,6 +593,8 @@ const topRatedEnglishMovies = computed(
 const topBoxOfficeMovies = computed(() => movieStore.getTopBoxOfficeMovies);
 const loading = computed(() => movieStore.isLoading);
 const selectedTab = ref("topRated");
+const isAuthenticated = computed(() => authStore.isLoggedIn);
+const playlists = computed(() => playlistStore.getPlaylists);
 
 const changeTab = (tab) => {
   selectedTab.value = tab;
@@ -544,6 +610,10 @@ const getUpcomingMovies = async () => {
   }
 };
 
+const addMovieToPlaylist = async (movie) => {
+  await playlistStore.addMovieToPlaylistAction(movie);
+};
+
 onMounted(() => {
   movieStore.getTopRatedAction();
   movieStore.getLowestRatedAction();
@@ -551,5 +621,6 @@ onMounted(() => {
   movieStore.getMostPopularAction();
   movieStore.getTopBoxOfficeMoviesAction();
   movieStore.getUpcomingMoviesByCountryAction('US')
+  playlistStore.fetchPlaylists();
 });
 </script>

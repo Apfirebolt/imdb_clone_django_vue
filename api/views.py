@@ -127,4 +127,43 @@ class AddMovieToPlayListApiView(UpdateAPIView):
         return PlayList.objects.filter(created_by=self.request.user)
 
 
+class RemoveMovieFromPlayListApiView(UpdateAPIView):
+    """
+    {
+        "movie_id": "tt1234567"
+    }
+    """
+    serializer_class = PlayListSerializer
+    queryset = PlayList.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        playlist = self.get_object()  # Get the specific playlist by pk
+        movie_id = request.data.get('movie_id')
+
+        if not movie_id:
+            return Response(
+                {"detail": "movie_id is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            movie_obj = Movie.objects.get(imdb_id=movie_id)
+            playlist.movies.remove(movie_obj)
+            playlist.save()
+            return Response({"detail": "Movie removed from playlist."}, status=status.HTTP_200_OK)
+        except Movie.DoesNotExist:
+            return Response(
+                {"detail": "Movie not found in this playlist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, pk=self.kwargs['pk'], created_by=self.request.user)
+        return obj
+
+    def get_queryset(self):
+        return PlayList.objects.filter(created_by=self.request.user)
+
 
