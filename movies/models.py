@@ -13,6 +13,9 @@ class Movie(models.Model):
     average_rating = models.DecimalField(max_digits=3, decimal_places=1, blank=True, null=True)
     metascore = models.IntegerField(blank=True, null=True)
     genres = models.JSONField(blank=True, null=True)
+    review = models.TextField(blank=True, null=True)
+    is_watched = models.BooleanField(default=False, null=True, blank=True)
+    is_favorite = models.BooleanField(default=False, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

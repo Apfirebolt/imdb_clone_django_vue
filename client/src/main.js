@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // AOS imports
 import 'aos/dist/aos.css'
 import 'vue3-toastify/dist/index.css';
+import 'md-editor-v3/lib/style.css';
 
 // register icons
 library.add(faUser, faTrash, faEdit, faPlus, faEye, faSave, faSearch);

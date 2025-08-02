@@ -68,6 +68,22 @@
                 >
                   Remove Movie <font-awesome-icon icon="trash" class="text-white" />
                 </button>
+                <div class="mt-2">
+                  <button
+                    v-if="!movie.review"
+                    class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
+                    @click="openReviewForm(movie)"
+                  >
+                    Add Review <font-awesome-icon icon="plus" class="text-white" />
+                  </button>
+                  <button
+                    v-else
+                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
+                    @click="$emit('update-review', movie.id)"
+                  >
+                    Update Review <font-awesome-icon icon="edit" class="text-white" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -116,6 +132,44 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <TransitionRoot appear :show="isReviewFormVisible" as="template">
+      <Dialog as="div" @close="hideReviewForm" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
+          >
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
+                <Editor />
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -130,12 +184,15 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { usePlaylistStore } from "../stores/playlist";
 import PlaylistForm from "../components/PlaylistForm.vue";
+import Editor from "../components/Editor.vue";
 import Loader from "../components/Loader.vue";
 
 const route = useRoute();
 const router = useRouter();
 const playlistStore = usePlaylistStore();
 const isPlaylistFormVisible = ref(false);
+const isReviewFormVisible = ref(false);
+const selectedMovie = ref(null);
 const playlist = computed(() => playlistStore.getPlaylist);
 const loading = computed(() => playlistStore.isLoading);
 
@@ -156,6 +213,15 @@ const hidePlaylistForm = () => {
 
 const openEditPlaylistForm = () => {
   isPlaylistFormVisible.value = true;
+};
+
+const hideReviewForm = () => {
+  isReviewFormVisible.value = false;
+};
+
+const openReviewForm = (movie) => {
+  selectedMovie.value = movie;
+  isReviewFormVisible.value = true;
 };
 
 const editPlaylistUtil = async (playlistData) => {

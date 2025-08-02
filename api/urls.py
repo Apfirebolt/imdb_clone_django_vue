@@ -7,7 +7,8 @@ from api.views import (
     ChangeSettingsApiView,
     ListCustomUsersApiView,
     AddMovieToPlayListApiView,
-    RemoveMovieFromPlayListApiView
+    RemoveMovieFromPlayListApiView,
+    MovieReviewApiView
 )
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
@@ -19,7 +20,7 @@ urlpatterns = [
     path("users", ListCustomUsersApiView.as_view(), name="list-custom-users"),
     path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify", TokenVerifyView.as_view(), name="token_verify"),
-    path("playlists", ListCreatePlayListApiView.as_view(), name="list-create-playlist"),
+    path("movies/<int:pk>/review", MovieReviewApiView.as_view(), name="movie-review"),
     path(
         "playlists/<int:pk>",
         RetrieveUpdateDestroyPlayListApiView.as_view(),

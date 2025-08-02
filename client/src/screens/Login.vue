@@ -140,7 +140,6 @@ const handleLogin = async () => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    alert("Login failed. Please try again.");
   } finally {
     loading.value = false;
   }

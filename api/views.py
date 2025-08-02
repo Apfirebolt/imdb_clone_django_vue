@@ -17,6 +17,7 @@ from .serializers import (
     PlayListSerializer,
     MovieSerializer,
     PlayListDetailSerializer,
+    MovieReviewSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
@@ -177,3 +178,23 @@ class RemoveMovieFromPlayListApiView(UpdateAPIView):
 
     def get_queryset(self):
         return PlayList.objects.filter(created_by=self.request.user)
+    
+
+class MovieReviewApiView(UpdateAPIView):
+    serializer_class = MovieReviewSerializer
+    queryset = Movie.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(
+            queryset, id=self.kwargs["pk"], created_by=self.request.user
+        )
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        movie = self.get_object()
+        serializer = self.get_serializer(movie, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        updated_movie = serializer.save()
+        return Response(MovieSerializer(updated_movie).data, status=status.HTTP_200_OK)

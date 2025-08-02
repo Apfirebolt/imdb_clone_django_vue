@@ -85,3 +85,17 @@ class PlayListDetailSerializer(serializers.ModelSerializer):
         model = PlayList
         fields = ('id', 'name', 'created_by', 'created_at', 'description', 'movies')
 
+
+class MovieReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('id', 'review', 'is_watched', 'is_favorite')
+        read_only_fields = ('created_by', 'created_at')
+
+    def update(self, instance, validated_data):
+        instance.review = validated_data.get('review', instance.review)
+        instance.is_watched = validated_data.get('is_watched', instance.is_watched)
+        instance.is_favorite = validated_data.get('is_favorite', instance.is_favorite)
+        instance.save()
+        return instance
+

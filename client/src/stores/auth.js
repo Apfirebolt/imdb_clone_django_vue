@@ -37,7 +37,7 @@ export const useAuth = defineStore("auth", {
       } catch (error) {
         let message = "An error occurred!";
         if (error.response && error.response.data) {
-          message = error.response.data.message;
+          message = error.response.data.detail;
         }
         console.log('Some error', error);
         toast.error(message, toastOptions);
