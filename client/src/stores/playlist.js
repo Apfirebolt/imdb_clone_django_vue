@@ -220,7 +220,7 @@ export const usePlaylistStore = defineStore("playlist", {
       }
     },
 
-    async addReviewToMovie(movieId, reviewData) {
+    async updateMovie(movieId, reviewData) {
       this.loading = true;
       this.error = null;
       try {

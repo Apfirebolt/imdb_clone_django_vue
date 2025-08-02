@@ -62,27 +62,55 @@
                 <div class="text-xs text-gray-500 mt-2">
                   Released: {{ movie.release_date }}
                 </div>
-                
+
                 <div class="mt-4 flex gap-2 justify-center">
                   <button
-                    class=" bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    :class="[
+                      'px-2 py-1 rounded transition',
+                      movie.is_favorite
+                        ? 'bg-pink-500 text-white hover:bg-pink-600'
+                        : 'bg-gray-200 text-pink-700 hover:bg-pink-100',
+                    ]"
+                    @click="toggleFavorite(movie.id)"
+                  >
+                    {{ movie.is_favorite ? "Unfavorite" : "Favorite" }}
+                  </button>
+                  <button
+                    :class="[
+                      'px-2 py-1 rounded transition',
+                      movie.is_watched
+                        ? 'bg-green-700 text-white hover:bg-green-800'
+                        : 'bg-gray-200 text-green-700 hover:bg-green-100',
+                    ]"
+                    @click="markMovieWatched(movie.id)"
+                  >
+                    {{ movie.is_watched ? "Unmark Watched" : "Mark Watched" }}
+                  </button>
+                </div>
+
+                <div class="mt-4 flex gap-2 justify-center">
+                  <button
+                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                     @click="removeMovie(movie.id)"
                   >
-                    Remove Movie <font-awesome-icon icon="trash" class="text-white" />
+                    Remove Movie
+                    <font-awesome-icon icon="trash" class="text-white" />
                   </button>
                   <button
                     v-if="!movie.review"
                     class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
                     @click="openReviewForm(movie)"
                   >
-                    Add Review <font-awesome-icon icon="plus" class="text-white ml-1" />
+                    Add Review
+                    <font-awesome-icon icon="plus" class="text-white ml-1" />
                   </button>
                   <button
                     v-else
                     class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition flex items-center"
                     @click="openReviewForm(movie)"
                   >
-                    Update Review <font-awesome-icon icon="edit" class="text-white ml-1" />
+                    Update Review
+                    <font-awesome-icon icon="edit" class="text-white ml-1" />
                   </button>
                 </div>
               </div>
@@ -164,7 +192,10 @@
               <DialogPanel
                 class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
-                <Editor @addReview="addMovieReviewUtil" :movie="selectedMovie" />
+                <Editor
+                  @addReview="addMovieReviewUtil"
+                  :movie="selectedMovie"
+                />
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -266,12 +297,37 @@ const addMovieReviewUtil = async (reviewData) => {
   try {
     const payload = {
       review: reviewData,
-    }
-    await playlistStore.addReviewToMovie(selectedMovie.value.id, payload);
+    };
+    await playlistStore.updateMovie(selectedMovie.value.id, payload);
     await getPlaylistById();
     hideReviewForm();
   } catch (error) {
     console.error("Error adding movie review:", error);
+  }
+};
+
+const markMovieWatched = async (movieId) => {
+  try {
+    const payload = {
+      is_watched: true,
+    };
+    await playlistStore.updateMovie(movieId, payload);
+    await getPlaylistById();
+  } catch (error) {
+    console.error("Error marking movie as watched:", error);
+  }
+};
+
+const toggleFavorite = async (movieId) => {
+  try {
+    const payload = {
+      is_favorite: !playlist.value.movies.find((m) => m.id === movieId)
+        .is_favorite,
+    };
+    await playlistStore.updateMovie(movieId, payload);
+    await getPlaylistById();
+  } catch (error) {
+    console.error("Error toggling favorite status:", error);
   }
 };
 
