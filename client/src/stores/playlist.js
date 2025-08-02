@@ -219,6 +219,31 @@ export const usePlaylistStore = defineStore("playlist", {
         this.loading = false;
       }
     },
+
+    async addReviewToMovie(movieId, reviewData) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.put(
+          `movies/${movieId}/review`,
+          reviewData,
+          { headers }
+        );
+        if (response.status === 201) {
+          toast.success("Review added successfully!", toastOptions);
+          return response.data;
+        }
+      } catch (error) {
+        this.error = error;
+        return null;
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 
   resetPlaylists() {

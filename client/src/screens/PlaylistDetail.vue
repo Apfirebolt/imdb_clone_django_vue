@@ -62,26 +62,27 @@
                 <div class="text-xs text-gray-500 mt-2">
                   Released: {{ movie.release_date }}
                 </div>
-                <button
-                  class="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                  @click="removeMovie(movie.id)"
-                >
-                  Remove Movie <font-awesome-icon icon="trash" class="text-white" />
-                </button>
-                <div class="mt-2">
+                
+                <div class="mt-4 flex gap-2 justify-center">
+                  <button
+                    class=" bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                    @click="removeMovie(movie.id)"
+                  >
+                    Remove Movie <font-awesome-icon icon="trash" class="text-white" />
+                  </button>
                   <button
                     v-if="!movie.review"
                     class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
                     @click="openReviewForm(movie)"
                   >
-                    Add Review <font-awesome-icon icon="plus" class="text-white" />
+                    Add Review <font-awesome-icon icon="plus" class="text-white ml-1" />
                   </button>
                   <button
                     v-else
-                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition"
-                    @click="$emit('update-review', movie.id)"
+                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition flex items-center"
+                    @click="openReviewForm(movie)"
                   >
-                    Update Review <font-awesome-icon icon="edit" class="text-white" />
+                    Update Review <font-awesome-icon icon="edit" class="text-white ml-1" />
                   </button>
                 </div>
               </div>
@@ -163,7 +164,7 @@
               <DialogPanel
                 class="w-full max-w-xxl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
-                <Editor />
+                <Editor @addReview="addMovieReviewUtil" :movie="selectedMovie" />
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -258,6 +259,19 @@ const getPlaylistById = async () => {
     await playlistStore.getPlaylistById(id);
   } catch (error) {
     console.error("Error fetching playlist by ID:", error);
+  }
+};
+
+const addMovieReviewUtil = async (reviewData) => {
+  try {
+    const payload = {
+      review: reviewData,
+    }
+    await playlistStore.addReviewToMovie(selectedMovie.value.id, payload);
+    await getPlaylistById();
+    hideReviewForm();
+  } catch (error) {
+    console.error("Error adding movie review:", error);
   }
 };
 
