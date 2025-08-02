@@ -91,6 +91,33 @@ export const useAuth = defineStore("auth", {
       }
     },
 
+    async updateProfile(profileData) {
+      this.loading = true;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.put("profile", profileData, { headers });
+        if (response.status === 200) {
+          this.profileData = response.data;
+          this.success = true;
+          toast.success("Profile updated successfully!", toastOptions);
+          return response.data;
+        }
+      } catch (error) {
+        let message = "An error occurred!";
+        if (error.response && error.response.data) {
+          message = error.response.data.message;
+        }
+        console.log(error);
+        toast.error(message, toastOptions);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     logout() {
       this.authData = null;
       toast.success("Logged out successfully!", toastOptions);

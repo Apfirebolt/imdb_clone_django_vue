@@ -98,8 +98,13 @@ const password = ref("");
 const loading = computed(() => authStore.isLoading);
 const profile = computed(() => authStore.getProfileData);
 
-const editProfileUtil = async (profileData) => {
+const editProfileUtil = async () => {
   try {
+    const profileData = {
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    };
     await authStore.updateProfile(profileData);
   } catch (error) {
     console.error("Error updating profile:", error);
