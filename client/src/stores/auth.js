@@ -3,19 +3,21 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import Cookie from "js-cookie";
-import { backendClient } from "../plugins/interceptor";
+import { backendClient, setupInterceptors } from "../plugins/interceptor";
 import { toast } from 'vue3-toastify';
 import { toastOptions } from "../utils";
 
 export const useAuth = defineStore("auth", {
   state: () => ({
     authData: Cookie.get("user") ? JSON.parse(Cookie.get("user")) : null,
+    profileData: ref(null),
     loading: ref(false),
     success: ref(false),
   }),
 
   getters: {
     getAuthData: (state) => state.authData,
+    getProfileData: (state) => state.profileData,
     isLoading: (state) => state.loading,
     isSuccess: (state) => state.success,
     isLoggedIn: (state) => !!state.authData,
@@ -66,6 +68,29 @@ export const useAuth = defineStore("auth", {
       }
     },
 
+    async getProfileAction() {
+      this.loading = true;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.get("profile", { headers });
+        this.profileData = response.data;
+        return response.data;
+      } catch (error) {
+        let message = "An error occurred!";
+        if (error.response && error.response.data) {
+          message = error.response.data.message;
+        }
+        console.log(error);
+        toast.error(message, toastOptions);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     logout() {
       this.authData = null;
       toast.success("Logged out successfully!", toastOptions);
@@ -81,3 +106,11 @@ export const useAuth = defineStore("auth", {
     },
   },
 });
+
+// Setup interceptors for auth-related actions
+// This will ensure that any 401 errors trigger the logout action
+export const setupAuthInterceptors = () => {
+  console.log('Setting up auth interceptors...');
+  const authStore = useAuth();
+  setupInterceptors(authStore.logout);
+};

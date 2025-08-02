@@ -26,6 +26,12 @@ const routes = [
         meta: { requiresAuth: true } // <--- Add this meta field
     },
     {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('../screens/Profile.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/playlists/:id',
         name: 'PlaylistDetail',
         component: () => import('../screens/PlaylistDetail.vue'),

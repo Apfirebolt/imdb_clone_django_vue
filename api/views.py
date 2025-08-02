@@ -22,6 +22,7 @@ from .serializers import (
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
 from movies.models import PlayList, Movie
+from django.contrib.auth.hashers import make_password
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -32,9 +33,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class CreateCustomUserApiView(CreateAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
+    
 
-
-class ChangeSettingsApiView(UpdateAPIView):
+class UserProfileApiView(RetrieveUpdateDestroyAPIView):
     serializer_class = CustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
@@ -44,6 +45,23 @@ class ChangeSettingsApiView(UpdateAPIView):
         obj = get_object_or_404(queryset, id=self.request.user.id)
         return obj
 
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        data = request.data
+
+        email = data.get("email")
+        username = data.get("username")
+        password = data.get("password")
+
+        if email:
+            user.email = email
+        if username:
+            user.username = username
+        if password:
+            user.password = make_password(password)
+
+        user.save()
+        return Response({"detail": "Profile updated successfully."}, status=status.HTTP_200_OK)
 
 class ListCustomUsersApiView(ListAPIView):
     serializer_class = ListCustomUserSerializer

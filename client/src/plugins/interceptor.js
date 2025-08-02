@@ -17,7 +17,32 @@ httpClient.interceptors.request.use(request => {
     return request;
 });
 
+const setupInterceptors = (logoutCallback) => {
+    console.log('Setting up interceptors for backend client...');
+    // Response interceptor for the backend client
+    backendClient.interceptors.response.use(
+        // Success case: just return the response.
+        response => {
+            return response;
+        },
+        // Error case: check the status code for 401.
+        error => {
+            // Check if the error has a response object and a status of 401
+            if (error.response && error.response.status === 401) {
+                console.log('Unauthorized (401) error detected. Triggering logout...');
+                
+                // Call the logout function passed in from the store
+                logoutCallback();
+            }
+            
+            // Always return a rejected promise so the error can be handled by the caller.
+            return Promise.reject(error);
+        }
+    );
+};
+
 export {
     httpClient,
-    backendClient
+    backendClient,
+    setupInterceptors
 }
