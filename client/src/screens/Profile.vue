@@ -7,9 +7,10 @@
         <!-- Title & Description Box -->
         <div class="bg-gray-100 rounded-lg p-4 flex-1">
           <h1 class="text-4xl font-bold text-primary mb-2">Profile</h1>
-          
+
           <p class="text-dark leading-relaxed mb-4">
-            Manage your profile information here. You can update your details and preferences.
+            Manage your profile information here. You can update your details
+            and preferences.
           </p>
         </div>
       </div>
@@ -64,6 +65,50 @@
               placeholder="Enter new password"
             />
           </div>
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 mb-1"
+              for="first_name"
+              >First Name</label
+            >
+            <input
+              id="first_name"
+              v-model="first_name"
+              type="text"
+              class="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+              placeholder="Enter first name"
+            />
+          </div>
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 mb-1"
+              for="last_name"
+              >Last Name</label
+            >
+            <input
+              id="last_name"
+              v-model="last_name"
+              type="text"
+              class="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+              placeholder="Enter last name"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 mb-1"
+              for="profile_picture"
+            >
+              Profile Picture
+            </label>
+            <input
+              id="profile_picture"
+              type="file"
+              accept="image/*"
+              @change="onProfilePictureChange"
+              class="mt-1 block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+            />
+          </div>
           <div class="col-span-1 md:col-span-3 flex justify-end mt-4">
             <button
               type="submit"
@@ -95,6 +140,8 @@ const authStore = useAuth();
 const email = ref("");
 const username = ref("");
 const password = ref("");
+const first_name = ref("");
+const last_name = ref("");
 const loading = computed(() => authStore.isLoading);
 const profile = computed(() => authStore.getProfileData);
 
@@ -104,6 +151,8 @@ const editProfileUtil = async () => {
       username: username.value,
       email: email.value,
       password: password.value,
+      first_name: first_name.value,
+      last_name: last_name.value,
     };
     await authStore.updateProfile(profileData);
   } catch (error) {
@@ -115,10 +164,12 @@ watch(profile, (newProfile) => {
   if (newProfile) {
     username.value = newProfile.username;
     email.value = newProfile.email;
+    first_name.value = newProfile.first_name || "";
+    last_name.value = newProfile.last_name || "";
   }
 });
 
 onMounted(() => {
-    authStore.getProfileAction();
+  authStore.getProfileAction();
 });
 </script>

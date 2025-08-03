@@ -98,4 +98,13 @@ class MovieReviewSerializer(serializers.ModelSerializer):
         instance.is_favorite = validated_data.get('is_favorite', instance.is_favorite)
         instance.save()
         return instance
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'profile_picture', 'password',)
+        extra_kwargs = {
+            'password': {'write_only': True, 'required': False},
+        }
 

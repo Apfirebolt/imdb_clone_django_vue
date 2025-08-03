@@ -3,7 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     ListCreateAPIView,
     UpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
+    RetrieveUpdateDestroyAPIView
 )
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
@@ -12,6 +12,7 @@ from rest_framework import status
 from django.db import transaction
 from .serializers import (
     CustomUserSerializer,
+    UserProfileSerializer,
     ListCustomUserSerializer,
     CustomTokenObtainPairSerializer,
     PlayListSerializer,
@@ -36,7 +37,7 @@ class CreateCustomUserApiView(CreateAPIView):
     
 
 class UserProfileApiView(RetrieveUpdateDestroyAPIView):
-    serializer_class = CustomUserSerializer
+    serializer_class = UserProfileSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -52,6 +53,8 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
         email = data.get("email")
         username = data.get("username")
         password = data.get("password")
+        first_name = data.get("first_name")
+        last_name = data.get("last_name")
 
         if email:
             user.email = email
@@ -59,6 +62,10 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
             user.username = username
         if password:
             user.password = make_password(password)
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
 
         user.save()
         return Response({"detail": "Profile updated successfully."}, status=status.HTTP_200_OK)

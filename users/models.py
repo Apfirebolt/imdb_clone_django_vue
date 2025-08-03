@@ -18,6 +18,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                               max_length=255, blank=True, null=True)
     username = models.CharField(
         "User Name", unique=True, max_length=255, blank=True, null=True)
+    first_name = models.CharField(
+        "First Name", max_length=255, blank=True, null=True)
+    last_name = models.CharField(
+        "Last Name", max_length=255, blank=True, null=True)
+    profile_picture = models.ImageField(
+        "Profile Picture", upload_to="profile_pictures/", blank=True, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    last_login = models.DateTimeField(auto_now=True, blank=True, null=True)
     is_active = models.BooleanField(
         'Active', default=True, blank=True, null=True)
     is_staff = models.BooleanField('Staff', default=False)
