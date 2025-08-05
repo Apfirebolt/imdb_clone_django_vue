@@ -55,6 +55,16 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
         password = data.get("password")
         first_name = data.get("first_name")
         last_name = data.get("last_name")
+        profile_picture = data.get("profile_picture")
+        if profile_picture:
+            user.profile_picture = profile_picture # Assuming profile_picture is a FileField or ImageField
+
+            # if size of the image exceeds 5MB, return error
+            if profile_picture.size > 5 * 1024 * 1024:  # 5MB
+                return Response(
+                    {"detail": "Profile picture size exceeds 5MB."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         if email:
             user.email = email
