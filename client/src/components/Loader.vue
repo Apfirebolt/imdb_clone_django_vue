@@ -12,12 +12,13 @@ export default {
 
 <style>
 .loader {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 36px;
-    height: 36px;
+    border: 6px solid #e5e7eb;
+    border-top: 6px solid #10b981;
     border-radius: 50%;
-    border-left-color: #4f46e5;
-    animation: spin 1s linear infinite;
+    width: 48px;
+    height: 48px;
+    animation: spin 0.8s ease-in-out infinite;
+    box-shadow: 0 0 10px #10b98133;
 }
 
 @keyframes spin {

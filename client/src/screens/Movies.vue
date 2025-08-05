@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-info flex items-center justify-center">
+  <div class="bg-info flex items-center justify-center">
     <div class="bg-white shadow-lg rounded-lg p-4">
       <div
         class="flex flex-col md:flex-row items-center justify-between mb-4 mt-16 gap-4"
@@ -18,13 +18,14 @@
               @click="isPlaylistModalOpened = true"
               class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
             >
-              Open Playlist
+              Open Playlist <font-awesome-icon icon="eye" class="text-white" />
             </button>
           </div>
         </div>
       </div>
 
-      <div class="mb-6">
+       <Loader v-if="loading" />
+      <div v-else class="mb-6">
         <div class="flex flex-wrap border-b border-gray-200">
           <button
             @click="changeTab('topRated')"
@@ -547,7 +548,6 @@
       </div>
     </div>
 
-    <Loader v-if="loading" />
     <TransitionRoot appear :show="isPlaylistModalOpened" as="template">
       <Dialog
         as="div"

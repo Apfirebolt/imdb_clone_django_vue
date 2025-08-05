@@ -4,7 +4,7 @@
       'border-b-4 lg:py-2 fixed top-0 z-20 w-full transition-all duration-300',
       isScrolledDown
         ? 'bg-dark dark:bg-slate-800'
-        : 'bg-secondary dark:bg-slate-700 dark:text-white',
+        : 'bg-danger dark:bg-slate-700 dark:text-white',
     ]"
     as="nav"
     v-slot="{ open }"
