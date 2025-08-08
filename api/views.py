@@ -18,11 +18,12 @@ from .serializers import (
     PlayListSerializer,
     MovieSerializer,
     PlayListDetailSerializer,
-    MovieReviewSerializer
+    MovieReviewSerializer,
+    AuditLogSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import CustomUser
-from movies.models import PlayList, Movie
+from movies.models import PlayList, Movie, AuditLog
 from django.contrib.auth.hashers import make_password
 
 
@@ -78,6 +79,17 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
             user.last_name = last_name
 
         user.save()
+        # Log the action in AuditLog
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="Updated user profile",
+            details={
+                "email": email,
+                "username": username,
+                "first_name": first_name,
+                "last_name": last_name
+            }
+        )   
         return Response({"detail": "Profile updated successfully."}, status=status.HTTP_200_OK)
 
 class ListCustomUsersApiView(ListAPIView):
@@ -93,6 +105,13 @@ class ListCreatePlayListApiView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+        # Log the action in AuditLog
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="Created a new playlist",
+            details={"playlist_name": serializer.validated_data['name']}
+        )
 
     def get_queryset(self):
         return PlayList.objects.filter(created_by=self.request.user)
@@ -114,6 +133,32 @@ class RetrieveUpdateDestroyPlayListApiView(RetrieveUpdateDestroyAPIView):
         if self.request.method == "GET":
             return PlayListDetailSerializer
         return PlayListSerializer
+    
+    def update(self, request, *args, **kwargs):
+        playlist = self.get_object()
+        serializer = self.get_serializer(playlist, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        updated_playlist = serializer.save()
+
+        # Log the action in AuditLog
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="Updated playlist",
+            details={"playlist_id": updated_playlist.id, "name": updated_playlist.name}
+        )
+
+        return Response(PlayListDetailSerializer(updated_playlist).data, status=status.HTTP_200_OK)
+    
+
+    def delete(self, request, *args, **kwargs):
+        playlist = self.get_object()
+        # Log the action in AuditLog before deletion
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="Deleted playlist",
+            details={"playlist_id": playlist.id, "name": playlist.name}
+        )
+        return super().delete(request, *args, **kwargs) 
 
 
 class AddMovieToPlayListApiView(UpdateAPIView):
@@ -159,6 +204,18 @@ class AddMovieToPlayListApiView(UpdateAPIView):
             playlist.movies.add(movie_obj)
             playlist.save()
 
+        # 2. Log the action in AuditLog
+        action = "Added movie to playlist" if created_new_movie else "Updated movie in playlist"
+        AuditLog.objects.create(
+            user=self.request.user,
+            action=action,
+            details={
+                "playlist_id": playlist.id,
+                "movie_id": movie_obj.id,
+                "imdb_id": imdb_id
+            }
+        )
+
         updated_playlist_serializer = PlayListSerializer(playlist)
         return Response(updated_playlist_serializer.data, status=status.HTTP_200_OK)
 
@@ -195,6 +252,17 @@ class RemoveMovieFromPlayListApiView(UpdateAPIView):
             movie_obj = Movie.objects.get(id=movie_id)
             playlist.movies.remove(movie_obj)
             playlist.save()
+
+            # Log the action in AuditLog
+            AuditLog.objects.create(
+                user=self.request.user,
+                action="Removed movie from playlist",
+                details={
+                    "playlist_id": playlist.id,
+                    "movie_id": movie_obj.id,
+                    "imdb_id": movie_obj.imdb_id
+                }
+            )
             return Response(
                 {"detail": "Movie removed from playlist."}, status=status.HTTP_200_OK
             )
@@ -232,4 +300,24 @@ class MovieReviewApiView(UpdateAPIView):
         serializer = self.get_serializer(movie, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         updated_movie = serializer.save()
+
+        # Log the action in AuditLog
+        AuditLog.objects.create(
+            user=self.request.user,
+            action="Reviewed movie",
+            details={
+                "movie_id": updated_movie.id,
+                "review": updated_movie.review,
+                "is_watched": updated_movie.is_watched,
+                "is_favorite": updated_movie.is_favorite
+            }
+        )
         return Response(MovieSerializer(updated_movie).data, status=status.HTTP_200_OK)
+    
+
+class AuditLogListApiView(ListAPIView):
+    serializer_class = AuditLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return AuditLog.objects.filter(user=self.request.user)

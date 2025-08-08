@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.models import CustomUser
-from movies.models import PlayList, Movie
+from movies.models import PlayList, Movie, AuditLog
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -107,4 +107,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
         }
+
+
+class AuditLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuditLog
+        fields = ('id', 'user', 'action', 'timestamp', 'details')
+        read_only_fields = ('id', 'user', 'timestamp', 'details')
 

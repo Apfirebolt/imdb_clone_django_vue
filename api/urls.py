@@ -8,7 +8,8 @@ from api.views import (
     ListCustomUsersApiView,
     AddMovieToPlayListApiView,
     RemoveMovieFromPlayListApiView,
-    MovieReviewApiView
+    MovieReviewApiView,
+    AuditLogListApiView
 )
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
@@ -40,5 +41,10 @@ urlpatterns = [
         "playlists/<int:pk>/remove-movie",
         RemoveMovieFromPlayListApiView.as_view(),
         name="remove-movie-from-playlist",
+    ),
+    path(
+        "audit-logs",
+        AuditLogListApiView.as_view(),
+        name="audit-log-list",
     ),
 ]
