@@ -21,7 +21,7 @@
             @click="showPlaylistForm"
             class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition mb-6"
           >
-            Create Playlist
+            Create Playlist <font-awesome-icon icon="plus" class="text-white" />
           </button>
         </div>
       </div>
@@ -29,6 +29,12 @@
       <div class="mt-6">
         <h2 class="text-2xl font-bold mb-4">Your Playlists</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-if="!playlists.length"
+            class="col-span-1 sm:col-span-2 md:col-span-3 bg-gray-100 rounded-lg p-6 text-center"
+          >
+            <p class="text-gray-600">No playlists available. Please create one.</p>
+          </div>
           <div
             v-for="playlist in playlists"
             :key="playlist.id"

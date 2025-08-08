@@ -129,6 +129,9 @@ watch(profile, (newProfile) => {
     email.value = newProfile.email;
     first_name.value = newProfile.first_name || "";
     last_name.value = newProfile.last_name || "";
+    profile_picture_preview.value = newProfile.profile_picture
+      ? newProfile.profile_picture
+      : null;
   }
 });
 

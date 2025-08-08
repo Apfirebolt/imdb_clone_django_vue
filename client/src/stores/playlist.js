@@ -2,9 +2,11 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import Cookie from "js-cookie";
 import router from "../routes";
+import { useAuth } from "./auth";
 import { backendClient } from "../plugins/interceptor";
 import { toast } from "vue3-toastify";
 import { toastOptions } from "../utils";
+
 
 export const usePlaylistStore = defineStore("playlist", {
   state: () => ({
@@ -30,6 +32,13 @@ export const usePlaylistStore = defineStore("playlist", {
   },
 
   actions: {
+    logoutOnUnauthorized() {
+      const authStore = useAuth();
+      authStore.logout();
+      router.push("/login");
+      toast.error("Session expired. Please log in again.", toastOptions);
+    },
+
     async fetchPlaylists() {
       this.loading = true;
       this.error = null;
@@ -41,7 +50,12 @@ export const usePlaylistStore = defineStore("playlist", {
         const response = await backendClient.get("playlists", { headers });
         this.playlists = response.data;
       } catch (error) {
-        this.error = error;
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to fetch playlists. Please try again.", toastOptions);
+          this.error = error;
+        }
       } finally {
         this.loading = false;
       }
@@ -93,6 +107,11 @@ export const usePlaylistStore = defineStore("playlist", {
           return response.data;
         }
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to update playlist. Please try again.", toastOptions);
+        }
         this.error = error;
         return null;
       } finally {
@@ -116,6 +135,11 @@ export const usePlaylistStore = defineStore("playlist", {
           toast.success("Playlist deleted successfully!", toastOptions);
         }
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to delete playlist. Please try again.", toastOptions);
+        }
         this.error = error;
       } finally {
         this.loading = false;
@@ -139,6 +163,12 @@ export const usePlaylistStore = defineStore("playlist", {
         }
       } catch (error) {
         this.error = error;
+        // handle 401 error
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to fetch playlist. Please try again.", toastOptions);
+        }
         return null;
       } finally {
         this.loading = false;
@@ -179,6 +209,11 @@ export const usePlaylistStore = defineStore("playlist", {
           return response.data;
         }
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to add movie to playlist. Please try again.", toastOptions);
+        }
         this.error = error;
         return null;
       } finally {
@@ -188,7 +223,6 @@ export const usePlaylistStore = defineStore("playlist", {
 
     // remove movie from a playlist
     async removeMovieFromPlaylist(playlistId, movieId) {
-      console.log("Removing movie with ID:", movieId);
       this.loading = true;
       this.error = null;
       try {
@@ -213,6 +247,11 @@ export const usePlaylistStore = defineStore("playlist", {
           return response.data;
         }
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to remove movie from playlist. Please try again.", toastOptions);
+        }
         this.error = error;
         return null;
       } finally {
@@ -238,6 +277,11 @@ export const usePlaylistStore = defineStore("playlist", {
           return response.data;
         }
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to update movie review. Please try again.", toastOptions);
+        }
         this.error = error;
         return null;
       } finally {
