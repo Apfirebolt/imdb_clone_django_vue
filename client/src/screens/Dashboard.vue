@@ -66,6 +66,22 @@
           </div>
         </div>
       </div>
+
+      <div class="mt-6">
+        <h2 class="text-2xl font-bold mb-4">Audit Logs</h2>
+        <div class="bg-white rounded-lg shadow p-4">
+          <ul class="space-y-2">
+            <li
+              v-for="log in auditLogs"
+              :key="log.id"
+              class="border-b last:border-b-0 py-2"
+            >
+              <p class="text-gray-800">{{ log.action }} - {{ log.timestamp }}</p>
+              <pre class="text-sm text-gray-600">{{ log.details }}</pre>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <Loader v-if="loading" />
@@ -136,6 +152,7 @@ const loading = computed(() => movieStore.isLoading);
 const selectedTab = ref("topRated");
 const selectedPlaylist = ref(null);
 const playlists = computed(() => playlistStore.getPlaylists);
+const auditLogs = computed(() => playlistStore.getAuditLogs);
 
 const changeTab = (tab) => {
   selectedTab.value = tab;
@@ -189,5 +206,6 @@ const openEditPlaylistForm = (playlist) => {
 
 onMounted(() => {
   playlistStore.fetchPlaylists();
+  playlistStore.fetchAuditLogs();
 });
 </script>

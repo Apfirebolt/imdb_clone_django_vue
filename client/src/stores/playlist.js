@@ -12,6 +12,7 @@ export const usePlaylistStore = defineStore("playlist", {
   state: () => ({
     playlists: ref([]),
     playlist: ref(null),
+    auditLogs: ref([]),
     loading: ref(false),
     error: ref(null),
   }),
@@ -22,6 +23,9 @@ export const usePlaylistStore = defineStore("playlist", {
     },
     getPlaylist(state) {
       return state.playlist;
+    },
+    getAuditLogs(state) {
+      return state.auditLogs;
     },
     isLoading(state) {
       return state.loading;
@@ -284,6 +288,30 @@ export const usePlaylistStore = defineStore("playlist", {
         }
         this.error = error;
         return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchAuditLogs() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.get("audit-logs", { headers });
+        if (response.status === 200) {
+          this.auditLogs = response.data;
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to fetch audit logs. Please try again.", toastOptions);
+        }
+        this.error = error;
       } finally {
         this.loading = false;
       }
