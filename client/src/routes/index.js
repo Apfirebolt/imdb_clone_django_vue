@@ -26,6 +26,18 @@ const routes = [
         meta: { requiresAuth: true } // <--- Add this meta field
     },
     {
+        path: '/users',
+        name: 'Users',
+        component: () => import('../screens/Users.vue'),
+        meta: { requiresAuth: true } // <--- Add this meta field
+    },
+    {
+        path: '/user/:id',
+        name: 'UserDetail',
+        component: () => import('../screens/UserDetail.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/profile',
         name: 'Profile',
         component: () => import('../screens/Profile.vue'),

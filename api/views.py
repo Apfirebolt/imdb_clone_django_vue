@@ -3,6 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     ListCreateAPIView,
     UpdateAPIView,
+    RetrieveAPIView,
     RetrieveUpdateDestroyAPIView
 )
 from rest_framework.permissions import IsAuthenticated
@@ -96,6 +97,17 @@ class ListCustomUsersApiView(ListAPIView):
     serializer_class = ListCustomUserSerializer
     queryset = CustomUser.objects.all()
     permission_classes = [IsAuthenticated]
+
+
+class UserDetailApiView(RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = get_object_or_404(queryset, id=self.kwargs["pk"])
+        return obj
 
 
 class ListCreatePlayListApiView(ListCreateAPIView):

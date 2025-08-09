@@ -137,7 +137,6 @@ export const useAuth = defineStore("auth", {
 // Setup interceptors for auth-related actions
 // This will ensure that any 401 errors trigger the logout action
 export const setupAuthInterceptors = () => {
-  console.log('Setting up auth interceptors...');
   const authStore = useAuth();
   setupInterceptors(authStore.logout);
 };

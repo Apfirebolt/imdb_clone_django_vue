@@ -51,7 +51,7 @@ class ListCustomUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'is_staff',)
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'profile_picture', 'is_staff',)
 
 
 class PlayListSerializer(serializers.ModelSerializer):
