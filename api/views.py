@@ -58,6 +58,9 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
         first_name = data.get("first_name")
         last_name = data.get("last_name")
         profile_picture = data.get("profile_picture")
+        is_locked = data.get("is_locked", False)
+        if is_locked == 'true':
+            is_locked = True
         if profile_picture:
             user.profile_picture = profile_picture # Assuming profile_picture is a FileField or ImageField
 
@@ -78,6 +81,8 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
             user.first_name = first_name
         if last_name:
             user.last_name = last_name
+        if is_locked is not None:
+            user.is_locked = is_locked
 
         user.save()
         # Log the action in AuditLog
@@ -88,7 +93,8 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
                 "email": email,
                 "username": username,
                 "first_name": first_name,
-                "last_name": last_name
+                "last_name": last_name,
+                "is_locked": is_locked
             }
         )   
         return Response({"detail": "Profile updated successfully."}, status=status.HTTP_200_OK)

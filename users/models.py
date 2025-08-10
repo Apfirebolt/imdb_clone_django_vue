@@ -26,6 +26,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         "Profile Picture", upload_to="profile_pictures/", blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     last_login = models.DateTimeField(auto_now=True, blank=True, null=True)
+    is_locked = models.BooleanField(
+        'Locked', default=False, blank=True, null=True)
     is_active = models.BooleanField(
         'Active', default=True, blank=True, null=True)
     is_staff = models.BooleanField('Staff', default=False)

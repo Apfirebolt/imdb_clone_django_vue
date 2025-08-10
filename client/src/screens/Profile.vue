@@ -63,6 +63,24 @@
               No profile picture selected.
             </p>
           </div>
+
+          <div class="col-span-1 md:col-span-3 flex items-center mt-2">
+            <input
+              id="is_locked"
+              type="checkbox"
+              v-model="is_locked"
+              class="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
+            />
+            <label for="is_locked" class="ml-2 block text-sm font-medium text-gray-700">
+              Lock Profile
+            </label>
+          </div>
+
+          <div class="col-span-1 md:col-span-3">
+            <p class="text-sm text-gray-500">
+              Note: Password is optional. If you leave it blank, it won't be changed.
+            </p>
+          </div>
           <div class="col-span-1 md:col-span-3 flex justify-end mt-4">
             <button type="submit"
               class="px-6 py-2 bg-primary text-white rounded-lg shadow hover:bg-primary-dark transition">
@@ -95,6 +113,7 @@ const password = ref("");
 const first_name = ref("");
 const last_name = ref("");
 const profile_picture = ref(null);
+const is_locked = ref(false);
 const profile_picture_preview = ref(null);
 const loading = computed(() => authStore.isLoading);
 const profile = computed(() => authStore.getProfileData);
@@ -112,6 +131,7 @@ const editProfileUtil = async () => {
     }
     formData.append("first_name", first_name.value);
     formData.append("last_name", last_name.value);
+    formData.append("is_locked", is_locked.value);
 
     if (profile_picture.value) {
       formData.append("profile_picture", profile_picture.value);
@@ -129,6 +149,7 @@ watch(profile, (newProfile) => {
     email.value = newProfile.email;
     first_name.value = newProfile.first_name || "";
     last_name.value = newProfile.last_name || "";
+    is_locked.value = newProfile.is_locked || false;
     profile_picture_preview.value = newProfile.profile_picture
       ? newProfile.profile_picture
       : null;

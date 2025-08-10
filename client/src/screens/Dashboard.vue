@@ -17,6 +17,11 @@
             class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition mb-6">
             Create Playlist <font-awesome-icon icon="plus" class="text-white" />
           </button>
+          <router-link
+            to="/users"
+            class="bg-secondary text-white px-4 py-2 rounded hover:bg-secondary-dark transition mb-6">
+            Explore Users <font-awesome-icon icon="user-circle" class="text-white" />
+          </router-link>
         </div>
       </div>
 

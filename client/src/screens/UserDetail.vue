@@ -41,12 +41,24 @@
 import { onMounted, ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
+import { usePlaylistStore } from "../stores/playlists";
+import { useAuth } from "../stores/auth";
 import Loader from "../components/Loader.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
+const playlistStore = usePlaylistStore();
+const authStore = useAuth();
 const loading = computed(() => userStore.isLoading);
 const user = computed(() => userStore.getUser);
+
+// if user.is_locked is false, then get the user movies
+const isUserLocked = computed(() => user.value?.is_locked);
+
+const userPlaylists = computed(() => {
+  if (isUserLocked.value) return [];
+  return playlistStore.getUserPlaylists(user.value.id);
+});
 
 onMounted(async () => {
   const userId = route.params.id;
