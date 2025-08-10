@@ -89,7 +89,7 @@ export const useUserStore = defineStore("users", {
       }
     },
 
-    async getMessages() {
+    async getMessagesAction() {
       this.loading = true;
       this.error = null;
       try {
@@ -111,7 +111,7 @@ export const useUserStore = defineStore("users", {
       }
     },
 
-    async sendMessage(messageData) {
+    async sendMessageAction(messageData) {
       this.loading = true;
       this.error = null;
       try {
@@ -121,6 +121,9 @@ export const useUserStore = defineStore("users", {
         };
         const response = await backendClient.post("messages", messageData, { headers });
         this.messages.push(response.data);
+        if (response.status === 201) {
+          toast.success("Message sent successfully!", toastOptions);
+        }
       } catch (error) {
         if (error.response && error.response.status === 401) {
           this.logoutOnUnauthorized();

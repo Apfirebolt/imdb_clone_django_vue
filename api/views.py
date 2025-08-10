@@ -352,7 +352,7 @@ class AuditLogListApiView(ListAPIView):
         return AuditLog.objects.filter(user=self.request.user)
     
 
-class PersonalMessagesListApiView(ListAPIView):
+class PersonalMessagesListApiView(ListCreateAPIView):
     serializer_class = PersonalMessagesSerializer
     permission_classes = [IsAuthenticated]
 

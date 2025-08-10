@@ -118,7 +118,8 @@ class AuditLogSerializer(serializers.ModelSerializer):
 
 
 class PersonalMessagesSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='sender.username', read_only=True)
     class Meta:
         model = PersonalMessages
-        fields = ('id', 'sender', 'recipient', 'title', 'message', 'timestamp')
-        read_only_fields = ('id', 'timestamp')
+        fields = ('id', 'username', 'recipient', 'title', 'message', 'timestamp')
+        read_only_fields = ('id', 'timestamp', 'sender', 'username')

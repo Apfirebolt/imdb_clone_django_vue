@@ -4,7 +4,7 @@
     class="max-w-md mx-auto bg-white p-8 rounded shadow"
   >
     <h2 class="text-2xl font-bold mb-6">
-      {{ props.message && props.message.id ? "Edit Message" : "Send Message" }}
+      {{ props.message }}
     </h2>
     <div class="mb-4">
       <label class="block text-gray-700 mb-2" for="title">Title</label>
@@ -30,9 +30,7 @@
       type="submit"
       class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
     >
-      {{
-        props.message && props.message.id ? "Update Message" : "Send Message"
-      }}
+      Send
     </button>
   </form>
 </template>
@@ -40,11 +38,11 @@
 <script setup>
 import { reactive, onMounted } from "vue";
 
-const emit = defineEmits(["send", "edit"]);
+const emit = defineEmits(["send"]);
 const props = defineProps({
   message: {
-    type: Object,
-    default: () => ({}),
+    type: String,
+    default: () => "",
   },
 });
 const form = reactive({
@@ -52,20 +50,9 @@ const form = reactive({
   message: "",
 });
 
-onMounted(() => {
-  if (props.message && props.message.id) {
-    form.title = props.message.title;
-    form.message = props.message.message;
-  }
-});
-
 function submitForm() {
   if (form.title && form.message) {
-    if (props.message && props.message.id) {
-      emit("edit", { ...form, id: props.message.id });
-    } else {
-      emit("send", form);
-    }
+    emit("send", form);
     form.title = "";
     form.message = "";
   } else {

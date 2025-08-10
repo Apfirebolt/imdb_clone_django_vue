@@ -33,6 +33,15 @@
           <strong>Status:</strong> Locked
         </p>
         <p class="text-gray-600 mb-1" v-else><strong>Status:</strong> Active</p>
+        <button
+          v-if="
+            !isUserLocked
+          "
+          @click="openMessageForm(user)"
+          class="mt-4 px-6 py-2 bg-primary text-white rounded hover:bg-primary-dark transition"
+        >
+          Send Message
+        </button>
         <div v-if="!isUserLocked && userPlaylists.length" class="mt-6 w-full">
           <h3 class="text-xl font-semibold mb-4">Playlists</h3>
           <ul class="space-y-4">
@@ -61,6 +70,48 @@
       <div v-else class="text-center text-gray-600 py-12">User not found.</div>
     </div>
     <Loader v-if="loading" />
+    <TransitionRoot appear :show="isMessageFormOpen" as="template">
+      <Dialog as="div" @close="closeMessageForm" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
+          >
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
+                <MessageForm
+                  v-if="isMessageFormOpen"
+                  :message="message"
+                  @send="sendMessage"
+                  @close="closeMessageForm"
+                />
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -86,6 +137,8 @@ const playlistStore = usePlaylistStore();
 const userPlaylists = ref([]);
 const isMessageFormOpen = ref(false);
 const authStore = useAuth();
+const selectedUser = ref(null);
+const message = ref("");
 const loading = computed(() => userStore.isLoading);
 const user = computed(() => userStore.getUser);
 
@@ -106,6 +159,22 @@ watch(user, (newUser) => {
     });
   }
 });
+
+const sendMessage = (messageData) => {
+  console.log("Sending message:", messageData);
+  const payload = {
+    title: messageData.title,
+    message: messageData.message,
+    recipient: selectedUser.value.id,
+  };
+  userStore.sendMessageAction(payload);
+};
+
+const openMessageForm = (user) => {
+  selectedUser.value = user;
+  isMessageFormOpen.value = true;
+  message.value = "Send message to " + user.username;
+}
 
 onMounted(async () => {
   const userId = route.params.id;
