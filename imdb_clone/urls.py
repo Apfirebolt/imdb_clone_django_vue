@@ -10,9 +10,9 @@ from django.views.generic import TemplateView
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="QS University World Ranking API",
+      title="IMDB Clone API",
       default_version='v1',
-      description="API which lists universities in QS World Ranking",
+      description="API which provides information about movies, TV shows, and celebrities.",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="aspper20@gmail.com"),
       license=openapi.License(name="BSD License"),

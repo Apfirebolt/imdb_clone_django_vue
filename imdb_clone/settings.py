@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    "rest_framework_api_key",
     'django_filters',
     'drf_yasg',
 

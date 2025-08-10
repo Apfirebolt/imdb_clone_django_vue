@@ -24,7 +24,7 @@
         </div>
       </div>
 
-       <Loader v-if="loading" />
+      <Loader v-if="loading" />
       <div v-else class="mb-6">
         <div class="flex flex-wrap border-b border-gray-200">
           <button

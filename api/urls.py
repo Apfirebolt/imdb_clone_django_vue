@@ -10,7 +10,8 @@ from api.views import (
     AddMovieToPlayListApiView,
     RemoveMovieFromPlayListApiView,
     MovieReviewApiView,
-    AuditLogListApiView
+    AuditLogListApiView,
+    PersonalMessagesListApiView
 )
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path("login", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("profile", UserProfileApiView.as_view(), name="user-settings"),
     path("users", ListCustomUsersApiView.as_view(), name="list-custom-users"),
+    path("messages", PersonalMessagesListApiView.as_view(), name="list-personal-messages"),
     path("users/<int:pk>", UserDetailApiView.as_view(), name="user-detail"),
     path("token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("token/verify", TokenVerifyView.as_view(), name="token_verify"),

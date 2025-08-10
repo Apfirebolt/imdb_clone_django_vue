@@ -20,10 +20,11 @@ from .serializers import (
     MovieSerializer,
     PlayListDetailSerializer,
     MovieReviewSerializer,
-    AuditLogSerializer
+    AuditLogSerializer,
+    PersonalMessagesSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
-from users.models import CustomUser
+from users.models import CustomUser, PersonalMessages
 from movies.models import PlayList, Movie, AuditLog
 from django.contrib.auth.hashers import make_password
 
@@ -349,3 +350,14 @@ class AuditLogListApiView(ListAPIView):
 
     def get_queryset(self):
         return AuditLog.objects.filter(user=self.request.user)
+    
+
+class PersonalMessagesListApiView(ListAPIView):
+    serializer_class = PersonalMessagesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PersonalMessages.objects.filter(recipient=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)

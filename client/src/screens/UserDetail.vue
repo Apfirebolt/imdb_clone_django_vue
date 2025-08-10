@@ -70,18 +70,31 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
 import { usePlaylistStore } from "../stores/playlist";
 import { useAuth } from "../stores/auth";
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/vue";
+import MessageForm from "../components/MessageForm.vue";
 import Loader from "../components/Loader.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
 const playlistStore = usePlaylistStore();
 const userPlaylists = ref([]);
+const isMessageFormOpen = ref(false);
 const authStore = useAuth();
 const loading = computed(() => userStore.isLoading);
 const user = computed(() => userStore.getUser);
 
 // if user.is_locked is false, then get the user movies
 const isUserLocked = computed(() => user.value?.is_locked);
+
+const closeMessageForm = () => {
+  isMessageFormOpen.value = false;
+};
 
 // Watch the 'user' computed property
 watch(user, (newUser) => {

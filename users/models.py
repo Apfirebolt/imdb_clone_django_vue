@@ -39,3 +39,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
       return self.email
+
+
+class PersonalMessages(models.Model):
+    sender = models.ForeignKey(CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(CustomUser, related_name='received_messages', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.sender} to {self.recipient} at {self.timestamp}"

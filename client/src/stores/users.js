@@ -11,6 +11,7 @@ export const useUserStore = defineStore("users", {
   state: () => ({
     users: ref([]),
     user: ref(null),
+    messages: ref([]),
     loading: ref(false),
     error: ref(null),
   }),
@@ -21,6 +22,9 @@ export const useUserStore = defineStore("users", {
     },
     getUser(state) {
       return state.user;
+    },
+    getMessages(state) {
+      return state.messages;
     },
     isLoading(state) {
       return state.loading;
@@ -80,6 +84,50 @@ export const useUserStore = defineStore("users", {
           toast.error("Failed to fetch user. Please try again.", toastOptions);
         }
         return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async getMessages() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.get("messages", { headers });
+        this.messages = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to fetch messages. Please try again.", toastOptions);
+          this.error = error;
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async sendMessage(messageData) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.post("messages", messageData, { headers });
+        this.messages.push(response.data);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to send message. Please try again.", toastOptions);
+          this.error = error;
+        }
       } finally {
         this.loading = false;
       }

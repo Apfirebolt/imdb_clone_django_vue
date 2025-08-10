@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from users.models import CustomUser
+from users.models import CustomUser, PersonalMessages
 from movies.models import PlayList, Movie, AuditLog
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -116,3 +116,9 @@ class AuditLogSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'action', 'timestamp', 'details')
         read_only_fields = ('id', 'user', 'timestamp', 'details')
 
+
+class PersonalMessagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PersonalMessages
+        fields = ('id', 'sender', 'recipient', 'title', 'message', 'timestamp')
+        read_only_fields = ('id', 'timestamp')
