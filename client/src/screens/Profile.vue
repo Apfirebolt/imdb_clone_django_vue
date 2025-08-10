@@ -80,6 +80,9 @@
             <p class="text-sm text-gray-500">
               Note: Password is optional. If you leave it blank, it won't be changed.
             </p>
+            <p class="text-sm text-gray-500">
+              Profile visibility is controlled by the "Lock Profile" setting. If you lock your profile, it will not be visible to others.
+            </p>
           </div>
           <div class="col-span-1 md:col-span-3 flex justify-end mt-4">
             <button type="submit"

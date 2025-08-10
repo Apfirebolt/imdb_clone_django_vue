@@ -60,6 +60,12 @@
       <div class="mt-6">
         <h2 class="text-2xl font-bold mb-4">Audit Logs</h2>
         <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-lg p-6">
+          <p class="text-gray-600 mb-4">
+            Below are the recent actions performed on your playlists.
+          </p>
+          <div v-if="!auditLogs.length" class="text-center text-gray-500">
+            No audit logs available.
+          </div>
           <ul class="divide-y divide-gray-200">
             <li v-for="log in auditLogs" :key="log.id" class="py-4 flex items-start space-x-4">
               <div class="flex-shrink-0">

@@ -2,128 +2,147 @@
   <div class="bg-info">
     <div class="bg-white shadow-lg rounded-lg p-4">
       <div
-        class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-12 gap-4"
+        v-if="playlist?.is_locked && !isPlaylistOwner"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 mt-24"
       >
-        <!-- Title & Description Box -->
-        <div class="bg-gray-100 rounded-lg p-4 flex-1">
-          <h1 class="text-4xl font-bold text-primary mb-2">
-            {{ playlist?.name || "Playlist Detail" }}
-          </h1>
-          <p class="text-dark leading-relaxed">
-            {{ playlist?.description }}
-          </p>
-        </div>
-        <!-- Buttons Box -->
-        <div
-          v-if="isPlaylistOwner"
-          class="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row items-center gap-2 md:ml-4"
+        <strong class="font-bold">Profile Locked:</strong>
+        <span class="block sm:inline"
+          >You cannot view this playlist because the owner's profile is
+          locked.</span
         >
-          <button
-            class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition w-full md:w-auto"
-            @click="openEditPlaylistForm"
-          >
-            Edit <font-awesome-icon icon="edit" class="text-white" />
-          </button>
-          <button
-            class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition w-full md:w-auto"
-            @click="deletePlaylist"
-          >
-            Delete <font-awesome-icon icon="trash" class="text-white" />
-          </button>
-        </div>
       </div>
 
-      <div class="mt-6">
-        <h2 class="text-2xl font-bold mb-4">Movies in this Playlist</h2>
-        <div v-if="playlist?.movies?.length">
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div
-              v-for="movie in playlist.movies"
-              :key="movie.id"
-              class="bg-white rounded shadow p-4 flex flex-col items-center"
+      <div v-else>
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 mt-12 gap-4"
+        >
+          <!-- Title & Description Box -->
+          <div class="bg-gray-100 rounded-lg p-4 flex-1">
+            <h1 class="text-4xl font-bold text-primary mb-2">
+              {{ playlist?.name || "Playlist Detail" }}
+            </h1>
+            <p class="text-dark leading-relaxed">
+              {{ playlist?.description }}
+            </p>
+          </div>
+          
+          <div
+            v-if="isPlaylistOwner"
+            class="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row items-center gap-2 md:ml-4"
+          >
+            <button
+              class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition w-full md:w-auto"
+              @click="openEditPlaylistForm"
             >
-              <img
-                v-if="movie.primary_image"
-                :src="movie.primary_image"
-                :alt="movie.title"
-                class="w-32 h-48 object-cover rounded mb-3"
-              />
-              <div class="text-center">
-                <h3 class="text-lg font-semibold mb-1">{{ movie.title }}</h3>
-                <p class="text-gray-600 text-sm mb-2 line-clamp-3">
-                  {{ movie.description }}
-                </p>
-                <span
-                  class="inline-block bg-blue-100 text-blue-800 mx-2 text-xs px-2 py-1 rounded mb-1"
-                  v-for="genre in movie.genres"
-                  :key="genre"
-                >
-                  {{ genre }}
-                </span>
-                <div class="text-xs text-gray-500 mt-2">
-                  Released: {{ movie.release_date }}
-                </div>
+              Edit <font-awesome-icon icon="edit" class="text-white" />
+            </button>
+            <button
+              class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition w-full md:w-auto"
+              @click="deletePlaylist"
+            >
+              Delete <font-awesome-icon icon="trash" class="text-white" />
+            </button>
+          </div>
+        </div>
 
-                <div v-if="isPlaylistOwner" class="mt-4 flex gap-2 justify-center">
-                  <button
-                    :class="[
-                      'px-2 py-1 rounded transition',
-                      movie.is_favorite
-                        ? 'bg-pink-500 text-white hover:bg-pink-600'
-                        : 'bg-gray-200 text-pink-700 hover:bg-pink-100',
-                    ]"
-                    @click="toggleFavorite(movie.id)"
+        <div class="mt-6">
+          <h2 class="text-2xl font-bold mb-4">Movies in this Playlist</h2>
+          <div v-if="playlist?.movies?.length">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div
+                v-for="movie in playlist.movies"
+                :key="movie.id"
+                class="bg-white rounded shadow p-4 flex flex-col items-center"
+              >
+                <img
+                  v-if="movie.primary_image"
+                  :src="movie.primary_image"
+                  :alt="movie.title"
+                  class="w-32 h-48 object-cover rounded mb-3"
+                />
+                <div class="text-center">
+                  <h3 class="text-lg font-semibold mb-1">{{ movie.title }}</h3>
+                  <p class="text-gray-600 text-sm mb-2 line-clamp-3">
+                    {{ movie.description }}
+                  </p>
+                  <span
+                    class="inline-block bg-blue-100 text-blue-800 mx-2 text-xs px-2 py-1 rounded mb-1"
+                    v-for="genre in movie.genres"
+                    :key="genre"
                   >
-                    {{ movie.is_favorite ? "Unfavorite" : "Favorite" }}
-                  </button>
-                  <button
-                    :class="[
-                      'px-2 py-1 rounded transition',
-                      movie.is_watched
-                        ? 'bg-green-700 text-white hover:bg-green-800'
-                        : 'bg-gray-200 text-green-700 hover:bg-green-100',
-                    ]"
-                    @click="markMovieWatched(movie.id)"
-                  >
-                    {{ movie.is_watched ? "Unmark Watched" : "Mark Watched" }}
-                  </button>
-                </div>
+                    {{ genre }}
+                  </span>
+                  <div class="text-xs text-gray-500 mt-2">
+                    Released: {{ movie.release_date }}
+                  </div>
 
-                <div v-if="isPlaylistOwner" class="mt-4 flex gap-2 justify-center">
-                  <button
-                    class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
-                    @click="removeMovie(movie.id)"
+                  <div
+                    v-if="isPlaylistOwner"
+                    class="mt-4 flex gap-2 justify-center"
                   >
-                    Remove Movie
-                    <font-awesome-icon icon="trash" class="text-white" />
-                  </button>
-                  <button
-                    v-if="!movie.review"
-                    class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
-                    @click="openReviewForm(movie)"
+                    <button
+                      :class="[
+                        'px-2 py-1 rounded transition',
+                        movie.is_favorite
+                          ? 'bg-pink-500 text-white hover:bg-pink-600'
+                          : 'bg-gray-200 text-pink-700 hover:bg-pink-100',
+                      ]"
+                      @click="toggleFavorite(movie.id)"
+                    >
+                      {{ movie.is_favorite ? "Unfavorite" : "Favorite" }}
+                    </button>
+                    <button
+                      :class="[
+                        'px-2 py-1 rounded transition',
+                        movie.is_watched
+                          ? 'bg-green-700 text-white hover:bg-green-800'
+                          : 'bg-gray-200 text-green-700 hover:bg-green-100',
+                      ]"
+                      @click="markMovieWatched(movie.id)"
+                    >
+                      {{ movie.is_watched ? "Unmark Watched" : "Mark Watched" }}
+                    </button>
+                  </div>
+
+                  <div
+                    v-if="isPlaylistOwner"
+                    class="mt-4 flex gap-2 justify-center"
                   >
-                    Add Review
-                    <font-awesome-icon icon="plus" class="text-white ml-1" />
-                  </button>
-                  <button
-                    v-else
-                    class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition flex items-center"
-                    @click="openReviewForm(movie)"
-                  >
-                    Update Review
-                    <font-awesome-icon icon="edit" class="text-white ml-1" />
-                  </button>
+                    <button
+                      class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                      @click="removeMovie(movie.id)"
+                    >
+                      Remove Movie
+                      <font-awesome-icon icon="trash" class="text-white" />
+                    </button>
+                    <button
+                      v-if="!movie.review"
+                      class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition"
+                      @click="openReviewForm(movie)"
+                    >
+                      Add Review
+                      <font-awesome-icon icon="plus" class="text-white ml-1" />
+                    </button>
+                    <button
+                      v-else
+                      class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition flex items-center"
+                      @click="openReviewForm(movie)"
+                    >
+                      Update Review
+                      <font-awesome-icon icon="edit" class="text-white ml-1" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div v-else>
-          <p class="text-gray-600">No movies in this playlist.</p>
+          <div v-else>
+            <p class="text-gray-600">No movies in this playlist.</p>
+          </div>
         </div>
       </div>
     </div>
-    
+
     <Loader v-if="loading" />
     <TransitionRoot appear :show="isPlaylistFormVisible" as="template">
       <Dialog as="div" @close="hidePlaylistForm" class="relative z-10">
@@ -232,6 +251,8 @@ const user = computed(() => authStore.getAuthData);
 const playlist = computed(() => playlistStore.getPlaylist);
 const loading = computed(() => playlistStore.isLoading);
 
+// only show the page if the user profile is not locked or the user is the owner of the playlist
+const isUserLocked = computed(() => user.value?.is_locked || false);
 const isPlaylistOwner = computed(() => {
   return user.value && playlist.value
     ? user.value.userData.id === playlist.value.created_by

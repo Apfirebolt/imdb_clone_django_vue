@@ -61,6 +61,8 @@ class UserProfileApiView(RetrieveUpdateDestroyAPIView):
         is_locked = data.get("is_locked", False)
         if is_locked == 'true':
             is_locked = True
+        else:
+            is_locked = False
         if profile_picture:
             user.profile_picture = profile_picture # Assuming profile_picture is a FileField or ImageField
 

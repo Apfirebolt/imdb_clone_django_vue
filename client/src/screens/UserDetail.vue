@@ -33,23 +33,23 @@
           <strong>Status:</strong> Locked
         </p>
         <p class="text-gray-600 mb-1" v-else><strong>Status:</strong> Active</p>
-        <div class="mt-6 w-full">
+        <div v-if="!isUserLocked && userPlaylists.length" class="mt-6 w-full">
           <h3 class="text-xl font-semibold mb-4">Playlists</h3>
-          <ul>
+          <ul class="space-y-4">
             <li
               v-for="playlist in userPlaylists"
               :key="playlist.id"
-              class="mb-2"
+              class="bg-white border border-gray-200 shadow-md rounded-lg p-4 transition hover:shadow-xl"
             >
-              <h4>
+              <h4 class="text-lg font-bold text-primary mb-1">
                 {{ playlist.name }}
               </h4>
-              <p>
+              <p class="text-gray-600 mb-2">
                 {{ playlist.description || "No description available." }}
               </p>
               <router-link
                 :to="`/playlists/${playlist.id}`"
-                class="text-blue-500 hover:underline"
+                class="inline-block px-4 py-2 bg-primary text-white rounded hover:bg-primary-dark transition"
               >
                 View Playlist
               </router-link>

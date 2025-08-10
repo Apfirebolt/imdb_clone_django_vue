@@ -80,10 +80,11 @@ class MovieSerializer(serializers.ModelSerializer):
 
 class PlayListDetailSerializer(serializers.ModelSerializer):
     movies = MovieSerializer(many=True, read_only=True)
+    is_locked = serializers.BooleanField(source='created_by.is_locked', read_only=True)
 
     class Meta:
         model = PlayList
-        fields = ('id', 'name', 'created_by', 'created_at', 'description', 'movies')
+        fields = ('id', 'name', 'created_by', 'created_at', 'description', 'movies', 'is_locked')
 
 
 class MovieReviewSerializer(serializers.ModelSerializer):
