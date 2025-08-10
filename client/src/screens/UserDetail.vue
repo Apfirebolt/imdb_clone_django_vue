@@ -29,6 +29,33 @@
           <strong>Joined:</strong>
           {{ new Date(user.date_joined).toLocaleDateString() }}
         </p>
+        <p class="text-gray-600 mb-1" v-if="user.is_locked">
+          <strong>Status:</strong> Locked
+        </p>
+        <p class="text-gray-600 mb-1" v-else><strong>Status:</strong> Active</p>
+        <div class="mt-6 w-full">
+          <h3 class="text-xl font-semibold mb-4">Playlists</h3>
+          <ul>
+            <li
+              v-for="playlist in userPlaylists"
+              :key="playlist.id"
+              class="mb-2"
+            >
+              <h4>
+                {{ playlist.name }}
+              </h4>
+              <p>
+                {{ playlist.description || "No description available." }}
+              </p>
+              <router-link
+                :to="`/playlists/${playlist.id}`"
+                class="text-blue-500 hover:underline"
+              >
+                View Playlist
+              </router-link>
+            </li>
+          </ul>
+        </div>
         <!-- Add more user fields as needed -->
       </div>
       <div v-else class="text-center text-gray-600 py-12">User not found.</div>
@@ -38,16 +65,17 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/users";
-import { usePlaylistStore } from "../stores/playlists";
+import { usePlaylistStore } from "../stores/playlist";
 import { useAuth } from "../stores/auth";
 import Loader from "../components/Loader.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
 const playlistStore = usePlaylistStore();
+const userPlaylists = ref([]);
 const authStore = useAuth();
 const loading = computed(() => userStore.isLoading);
 const user = computed(() => userStore.getUser);
@@ -55,9 +83,15 @@ const user = computed(() => userStore.getUser);
 // if user.is_locked is false, then get the user movies
 const isUserLocked = computed(() => user.value?.is_locked);
 
-const userPlaylists = computed(() => {
-  if (isUserLocked.value) return [];
-  return playlistStore.getUserPlaylists(user.value.id);
+// Watch the 'user' computed property
+watch(user, (newUser) => {
+  if (newUser && !newUser.is_locked) {
+    // Call the API to fetch the playlists when the user is not locked
+    userPlaylists.value = [];
+    playlistStore.getUserPlaylists(newUser.id).then((playlists) => {
+      userPlaylists.value = playlists;
+    });
+  }
 });
 
 onMounted(async () => {

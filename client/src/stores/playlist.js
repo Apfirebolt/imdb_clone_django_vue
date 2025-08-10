@@ -179,6 +179,33 @@ export const usePlaylistStore = defineStore("playlist", {
       }
     },
 
+    async getUserPlaylists(userId) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const authData = Cookie.get("user");
+        const headers = {
+          Authorization: `Bearer ${JSON.parse(authData).access}`,
+        };
+        const response = await backendClient.get(`playlists?user_id=${userId}`, {
+          headers,
+        });
+        if (response.status === 200) {
+          return response.data;
+        }
+      } catch (error) {
+        this.error = error;
+        if (error.response && error.response.status === 401) {
+          this.logoutOnUnauthorized();
+        } else {
+          toast.error("Failed to fetch user playlists. Please try again.", toastOptions);
+        }
+        return [];
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async addMovieToPlaylist(playlistId, movieData) {
       this.loading = true;
       this.error = null;

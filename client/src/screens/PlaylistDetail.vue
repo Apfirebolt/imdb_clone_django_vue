@@ -15,6 +15,7 @@
         </div>
         <!-- Buttons Box -->
         <div
+          v-if="isPlaylistOwner"
           class="bg-gray-50 rounded-lg p-4 flex flex-col md:flex-row items-center gap-2 md:ml-4"
         >
           <button
@@ -63,7 +64,7 @@
                   Released: {{ movie.release_date }}
                 </div>
 
-                <div class="mt-4 flex gap-2 justify-center">
+                <div v-if="isPlaylistOwner" class="mt-4 flex gap-2 justify-center">
                   <button
                     :class="[
                       'px-2 py-1 rounded transition',
@@ -88,7 +89,7 @@
                   </button>
                 </div>
 
-                <div class="mt-4 flex gap-2 justify-center">
+                <div v-if="isPlaylistOwner" class="mt-4 flex gap-2 justify-center">
                   <button
                     class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
                     @click="removeMovie(movie.id)"
@@ -122,7 +123,7 @@
         </div>
       </div>
     </div>
-
+    
     <Loader v-if="loading" />
     <TransitionRoot appear :show="isPlaylistFormVisible" as="template">
       <Dialog as="div" @close="hidePlaylistForm" class="relative z-10">
@@ -214,6 +215,7 @@ import {
 } from "@headlessui/vue";
 import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuth } from "../stores/auth";
 import { usePlaylistStore } from "../stores/playlist";
 import PlaylistForm from "../components/PlaylistForm.vue";
 import Editor from "../components/Editor.vue";
@@ -222,11 +224,19 @@ import Loader from "../components/Loader.vue";
 const route = useRoute();
 const router = useRouter();
 const playlistStore = usePlaylistStore();
+const authStore = useAuth();
 const isPlaylistFormVisible = ref(false);
 const isReviewFormVisible = ref(false);
 const selectedMovie = ref(null);
+const user = computed(() => authStore.getAuthData);
 const playlist = computed(() => playlistStore.getPlaylist);
 const loading = computed(() => playlistStore.isLoading);
+
+const isPlaylistOwner = computed(() => {
+  return user.value && playlist.value
+    ? user.value.userData.id === playlist.value.created_by
+    : false;
+});
 
 const fetchPlaylist = async () => {
   try {

@@ -132,6 +132,9 @@ class ListCreatePlayListApiView(ListCreateAPIView):
         )
 
     def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            return PlayList.objects.filter(created_by_id=user_id)
         return PlayList.objects.filter(created_by=self.request.user)
 
 
@@ -142,9 +145,14 @@ class RetrieveUpdateDestroyPlayListApiView(RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         queryset = self.get_queryset()
-        obj = get_object_or_404(
-            queryset, id=self.kwargs["pk"], created_by=self.request.user
-        )
+        if self.request.method in ["PUT", "PATCH", "DELETE"]:
+            obj = get_object_or_404(
+                queryset, id=self.kwargs["pk"], created_by=self.request.user
+            )
+        else:
+            obj = get_object_or_404(
+                queryset, id=self.kwargs["pk"]
+            )
         return obj
 
     def get_serializer_class(self):
