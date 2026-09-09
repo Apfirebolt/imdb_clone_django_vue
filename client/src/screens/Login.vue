@@ -37,13 +37,13 @@
                 for="email"
                 class="block text-xs font-semibold text-[var(--color-dark)] mb-1.5 font-heading"
               >
-                Email Address or Username
+                Email Address
               </label>
               <input
                 id="email"
                 v-model="email"
                 type="text"
-                autocomplete="username"
+                autocomplete="email"
                 required
                 class="w-full px-3.5 py-2.5 bg-[var(--color-light)] border border-[var(--color-secondary)]/40 rounded-lg text-sm text-[var(--color-dark)] placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition"
                 placeholder="you@example.com"
@@ -178,7 +178,7 @@ const handleLogin = async () => {
   try {
     // Passes username key for compatibility with Django REST framework
     await userStore.loginAction({
-      username: email.value.trim(),
+      email: email.value.trim(),
       password: password.value,
     });
 
@@ -187,7 +187,7 @@ const handleLogin = async () => {
     errorMessage.value =
       error.response?.data?.detail ||
       error.response?.data?.message ||
-      "Invalid username or password. Please try again.";
+      "Invalid email or password. Please try again.";
   }
 };
 </script>
