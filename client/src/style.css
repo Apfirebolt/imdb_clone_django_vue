@@ -1,25 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Raleway:wght@400;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
-body {
-  font-family: 'Lato', sans-serif;
-  background-color: #f0f4f8;
-  color: #333;
-}
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Montserrat', sans-serif;
-}
-h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-}
-h2 {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
 @theme {
+  /* Font Family Definitions */
+  --font-body: 'Lato', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-display: 'Raleway', sans-serif;
+
+  /* Theme Colors */
   --color-primary: #5409DA;
   --color-secondary: #B6B09F;
   --color-tertiary: #4E71FF;
@@ -29,4 +17,25 @@ h2 {
   --color-success: #5B913B;
   --color-info: #BBFBFF;
   --color-accent-dark: #F9B3D1;
+}
+
+/* Base Element Overrides */
+body {
+  font-family: var(--font-body);
+  background-color: #f0f4f8;
+  color: #333;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
 }
